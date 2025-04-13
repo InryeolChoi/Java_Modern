@@ -1,0 +1,24 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'com.example'
+version = '1.0-SNAPSHOT'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17 // 너가 사용하는 자바 버전에 맞게!
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly("org.projectlombok:lombok:1.18.38")
+    annotationProcessor("org.projectlombok:lombok:1.18.38")
+}
+
+application {
+    mainClass = 'part1.practice' // 패키지명을 포함한 Main 클래스 경로
+}
