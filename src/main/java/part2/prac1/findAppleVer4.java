@@ -9,10 +9,10 @@ public class findAppleVer4 {
         boolean test (T item);
     }
 
-    public static <T> List<T> filterApples(List<T> list, Predicate<T> predicate) {
+    public static <T> List<T> fourthfilter(List<T> list, Predicate<T> p) {
         List<T> result = new ArrayList<>();
         for (T item : list) {
-            if (predicate.test(item)) {
+            if (p.test(item)) {
                 result.add(item);
             }
         }
@@ -33,7 +33,7 @@ public class findAppleVer4 {
         }
 
         // 람다식 사용
-        List<Apple> result = filterApples(apples, (Apple apple) -> apple.getColor().equals(Color.RED));
+        List<Apple> result = fourthfilter(apples, (Apple apple) -> apple.getColor().equals(Color.RED));
 
     }
 }
