@@ -5,7 +5,7 @@ import part2.prac1.Color;
 
 import java.util.*;
 
-public class CompareApple {
+public class ComparatorExample {
     public static void main(String[] args) {
         Random r = new Random();
         r.setSeed(System.currentTimeMillis());

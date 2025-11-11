@@ -93,6 +93,7 @@ List<Apple> result = fourthfilter(apples, (Apple apple) -> apple.getColor().equa
 * 람다식을 이용하면 좀 더 편리하게 코드를 작성할 수 있다.
 * 또한, 병렬처리가 필요한 코드에도 효과적이다.
 
+(1) Runnable
 ```java
 public class RunnableExample {
     public static void main(String[] args) {
@@ -102,4 +103,17 @@ public class RunnableExample {
         thread.start();
     }
 }
+```
+* Runnable은 쓰레드가 무엇을 할지 알려줄 때 쓰는 클래스
+  * 단, 쓰레드의 결과값 반환이 불가능하다.
+* 해당 코드 내에는 new가 없는데 어떻게 객체를 생성?
+  * 람다식을 이용해서 System.out.println 함수 자체를 전달하듯 표현할 것일뿐임.
+  * 실제 저 코드를 풀어보면, 내부에는 이미 new가 있음!
+
+(2) Callable
+* Callable도 쓰레드가 무엇을 할지 알려줄 때 쓰는 클래스
+    * 이건 쓰레드의 결과값 반환이 가능하다!
+```java
+
+
 ```
