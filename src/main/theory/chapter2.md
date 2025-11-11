@@ -114,6 +114,22 @@ public class RunnableExample {
 * Callable도 쓰레드가 무엇을 할지 알려줄 때 쓰는 클래스
     * 이건 쓰레드의 결과값 반환이 가능하다!
 ```java
-
-
+    private static List<Future<Integer>> call_2nd_option(ExecutorService executor) {
+    List<Callable<Integer>> tasks = new ArrayList<>();
+    // Callable 객체를 이용해 각 쓰레드가 뭐할지를 지정 (람다식)
+    for (int i = 0; i < 3; i++) {
+        int num = i; // 변수 캡처 때문에 이런 작업이 필요
+        tasks.add(() -> {
+            System.out.println("람다식으로 " + num + "번째 작업 진행중..");
+            Thread.sleep(1000);
+            return num * 100;
+        });
+    }
+    try {
+        // 모든 쓰레드에게 tasks를 야기함!
+        return executor.invokeAll(tasks);
+    } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+    }
+}
 ```
