@@ -240,4 +240,3 @@ Arrays.sort(arr, String::compareToIgnoreCase);
 ```java
 Supplier<ArrayList<String>> s = () -> new ArrayList<>();
 ```
-
