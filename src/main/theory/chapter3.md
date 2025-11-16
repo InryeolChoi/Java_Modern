@@ -162,4 +162,82 @@ public class ExecuteAroundExample {
 * 그래서 일부 함수형 인터페이스는 이걸 막기 위해 기본형 전용으로 설계됨.
 * ex. IntPredicate, LongPredicate 등등...
 
-## 형식검사, 형식추론, 제약
+## 타입검사, 타입추론, 제약
+### 1. 람다 표현식에서 타입 추론(Type Inference)
+* 자바는 람다식의 파라미터 타입을 대부분의 경우 생략할 수 있다.
+* 왜냐하면 람다식이 할당되는 위치(컨텍스트)를 기반으로 컴파일러가 타입을 추론하기 때문이다.
+
+```java
+List<String> list = Arrays.asList("a", "b", "c");
+list.sort((s1, s2) -> s1.compareToIgnoreCase(s2));
+```
+
+* 핵심 개념 1 — 람다의 “대상 타입(Target Type)”
+  * 람다의 타입을 결정하는 것은 대상 타입이다.
+  * 즉, 람다 표현식이 사용된 위치에서 요구하는 함수형 인터페이스가 람다의 타입을 결정한다.
+```java
+Predicate<String> p = s -> s.length() > 0;
+```
+여기서 s는 자동으로 String 타입으로 추론됨.
+
+* 핵심 개념 2 — 자바 컴파일러는 문맥 기반으로 타입을 결정한다
+  * 컴파일러는 다음과 같은 정보를 조합해 타입을 추론한다:
+    * 람다가 사용되는 메서드의 파라미터 타입 
+    * 람다가 할당되는 변수 타입 
+    * 제네릭 메서드라면 인자 타입 
+    * 오버로드된 메서드라면 가장 구체적인 시그니처 선택
+
+* ❗중요한 제약 — 람다의 파라미터는 ‘일관성 있는 형식’을 가져야 한다
+  * 람다의 파라미터를 선언할 때, 모두 타입을 쓰거나 모두 타입을 생략해야 한다.
+  * 섞어서 쓰면 안 됨.
+
+* 핵심 개념 3 — 람다에서 지역 변수 캡처 규칙 
+  * 람다식 내부에서 바깥 지역 변수를 사용할 수 있다. 하지만 반드시 final 또는 effectively final(사실상 final) 이어야 한다. 
+  * 왜? 람다는 멀티스레드 환경에서도 안전하게 동작해야 하기 때문이고, 지역 변수가 변경 가능하면 일관성이 깨질 수 있기 때문에 금지된다.
+
+```java
+int port = 8080;
+Runnable r = () -> System.out.println(port);
+
+// port = 9090; // ← 변경하면 컴파일 오류 발생!
+```
+
+## 메서드 참조
+* 람다 표현식을 더 간결하고 읽기 쉽게 만드는 문법.
+* 람다로 이미 존재하는 메서드 하나만 호출하는 형태라면 → 메서드 참조로 대체 가능!
+
+* 람다 vs 메서드 참조 비교:
+```java
+(words) -> Integer.parseInt(words)   // 람다
+Integer::parseInt                     // 메서드 참조
+```
+
+### 메서드 참조의 3가지 유형
+1. 정적 메서드 참조
+```java
+Function<String, Integer> f = Integer::parseInt;
+```
+
+2. 특정 객체의 인스턴스 메서드 참조
+```java
+// 메서드 참조
+PrintStream out = System.out;
+Consumer<String> c = out::println;
+
+// 람다
+Consumer<String> c = x -> out.println(x);
+```
+
+3. 임의 객체의 인스턴스 메서드 참조
+```java
+String[] arr = {"a", "b", "c"};
+Arrays.sort(arr, String::compareToIgnoreCase);
+```
+
+### 생성자 참조
+* 생성자도 메서드처럼 참조할 수 있다.
+
+```java
+Supplier<ArrayList<String>> s = () -> new ArrayList<>();
+```
+
