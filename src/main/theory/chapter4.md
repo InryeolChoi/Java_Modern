@@ -93,3 +93,11 @@ menu.stream()
   * 카테고리(category)별 평균 가격을 Map<String, Double>으로 계산
   * 스트림의 Collectors.groupingBy 와 Collectors.averagingInt 를 활용할 것
 * [해답2](../java/part4/prac2/FilterProduct2.java)
+
+### 문제 3 — 
+* 우선 오른쪽 [Order 링크](../java/part4/prac2/Order.java)를 참조해 클래스를 만들자.
+* 요구사항
+  * 쿠팡 로켓배송처럼 “주문일 + 배송일수 = 배송 예정일” 을 계산해야 한다.
+  * 남은 주문들에 대해 `배송 예정일 = orderDate.plusDays(deliveryDays)`
+  * 결과를 Map<Integer, LocalDate> 형태로 만들기
+* [해답2](../java/part4/prac2/FilterProduct3.java)
