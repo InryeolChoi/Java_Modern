@@ -189,4 +189,85 @@ List<Dish> menu = Arrays.asList(
 * [해답](../java/part5/prac5/Example1.java)
 
 ## 리듀싱
-### 
+### 리듀싱이란?
+* 스트림의 모든 요소를 하나의 결과값으로 합치는 것(집계)
+* 예: 합계, 곱, 최대값, 최소값, 문자열 결합 등
+
+* map과의 차이
+  * map : 결과가 “여전히 리스트/스트림”이다. 중간연산임.
+  * reduce : int, String 등 하나의 값을 만들 수 있음. 최종연산임.
+
+* reduce에는 3가지 버전이 있음.
+  * reduce(accumulator)
+  * reduce(identity, accumulator)
+  * reduce(identity, accumulator, combiner)
+* identity : 초기값
+* accumulator : 계산방식
+* combiner : 결합방식
+
+### 1) reduce(accumulator)
+```java
+Optional<Integer> sum = numbers.stream()
+        .reduce((a, b) -> a + b);
+```
+
+### 2) reduce(identity, accumulator)
+```java
+int sum = numbers.stream()
+        .reduce(0, (a, b) -> a + b);
+```
+
+### 3) reduce(identity, accumulator, combiner)
+```java
+// numbermap의 타입이 HashMap이라고 해보자.
+int sum = numbermap.stream()
+        .reduce(0, (sum, numbermap) -> sum + numbermap.getnumber(), Integer::sum);
+```
+* 이 버전은 ...
+  * ✔ **병렬 스트림(parallel stream)**을 위해 존재한다.
+  * ✔ 요소 타입(T)와 결과 타입(U)을 다르게 만들기 위해 존재한다. 
+  * ✔ 성능 때문에 필요하다.
+* 자세한 건 7장에서!
+
+### max/min : reduce로!
+```java
+Optional<Integer> max = numbers.stream()
+        .reduce(Integer::max);
+
+Optional<Integer> min = numbers.stream()
+        .reduce(Integer::min);
+```
+
+### 4) 문자열 이어 붙이기 : reduce로!
+```java
+String joined = words.stream()
+        .reduce("", (a, b) -> a + b);
+```
+
+### 연습문제 1
+1. reduce(accumulator)만 사용해서 최대값 찾기 (Optional 버전)
+```java
+List<Integer> nums = Arrays.asList(3, 7, 2, 11, 9, 5);
+```
+* 다음 조건을 만족하는 코드를 작성하라:
+  * reduce(accumulator) 하나만 사용한다 
+  * identity(초기값)는 쓰면 안 된다 
+  * 결과 리턴 타입은 Optional<Integer>
+  * 리스트 내 가장 큰 값을 찾아서 출력하라
+
+2. reduce(identity, accumulator)만 사용해서 문자열 길이 합계 구하기
+```java
+List<String> words = Arrays.asList("java", "stream", "lambda", "reduce");
+```
+* 다음 조건을 만족하는 코드를 작성하라:
+  * reduce(identity, accumulator) 2-arg 버전만 사용 
+  * Optional 없이 직접 int 결과를 받는다 
+  * 문자열 전체 길이의 합계를 구하라
+
+### 연습문제 2
+1. reduce만 사용해서 칼로리 총합 구하기
+2. reduce로 가장 칼로리 높은 Dish 찾기
+3. reduce로 모든 요리 이름 이어 붙이기
+* [해답](../java/part5/prac6/Example2.java)
+
+## 기본형 스트림
