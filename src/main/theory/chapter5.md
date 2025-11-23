@@ -147,3 +147,46 @@ List<Integer> B = Arrays.asList(5, 6, 7);
   2. 두 수의 차이(|a - b|) 가 홀수인 경우만 남겨라
   3. 조건을 만족하는 조합을 다음 문자열 포맷으로 변환하라:
 * [해답](../java/part5/prac4/Example2.java)
+
+## 검색과 매칭
+### 1) anyMatch(predicate)
+* 하나라도 조건을 만족하면 true 
+* 하나 찾으면 즉시 종료됨 → 매우 빠름.
+
+### 2) allMatch(predicate)
+* 모든 요소가 조건을 만족하면 true
+* 하나라도 false 나오면 즉시 종료.
+
+### 3) noneMatch(predicate)
+* 모든 요소가 조건을 만족하지 않을 때 true
+* 즉.. !anyMatch와 같다!
+
+### 4) findAny()
+* 조건을 만족하는 임의의 요소 하나를 Optional로 반환 
+* 병렬 스트림(parallel)에서 안정적
+
+### 5) findFirst()
+* 조건을 만족하는 첫 번째 요소를 Optional로
+
+### 연습 문제
+* 다음 Dish 리스트가 있다고 하자:
+```java
+List<Dish> menu = Arrays.asList(
+    new Dish("pork", false, 800),
+    new Dish("beef", false, 700),
+    new Dish("chicken", false, 400),
+    new Dish("salad", true, 150),
+    new Dish("rice", true, 350),
+    new Dish("fish", false, 450)
+);
+```
+1. 칼로리가 600 이상인 요리가 하나라도 있는지 anyMatch로 검사하라.
+2. 모든 요리의 칼로리가 900 미만인지 allMatch로 확인하라.
+3. 칼로리가 1000 이상인 요리가 하나도 없는지 noneMatch로 확인하라.
+4. 채식 요리(vegetarian=true) 중 “칼로리가 가장 낮은 요리”를 findFirst로 찾아라.
+5. 칼로리가 500 이하인 요리 하나를 findAny()로 반환하라.
+
+* [해답](../java/part5/prac5/Example1.java)
+
+## 리듀싱
+### 
