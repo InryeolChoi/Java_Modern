@@ -48,7 +48,9 @@ stream.skip(2)
 ```
 
 ### 연습문제
-* [Dish 클래스](../java/part5/prac1/Dish.java)
+* 아래와 같이 Dish 클래스가 있고, 해당 클래스의 요리(dish)는 칼로리 오름차순으로 정렬된 상태라고 가정하자.
+  * [Dish 클래스](../java/part5/prac1/Dish.java)
+* 칼로리가 500 미만인 요리만 “앞에서부터” takeWhile로 추출한 뒤, 그 중 처음 2개만(limit) 골라서 이름 리스트로 출력하라.
 * [해답](../java/part5/prac1/FindFirstTwo.java)
 
 ## 매핑
@@ -86,3 +88,35 @@ List<String> words = Arrays.asList("Hello", "World");
 ```
 * 각 단어를 구성하는 문자(Character) 하나씩을 모두 출력하는 스트림을 flatMap을 이용해 만들어라.
 * [해답](../java/part5/prac3/PrintChar.java)
+
+## 고급 매핑
+### 1) flatMap으로 모든 조합(Cartesian Product) 만들기
+* 두 리스트가 있을 때:
+```java
+List<Integer> numbers1 = Arrays.asList(1,2,3);
+List<Integer> numbers2 = Arrays.asList(3,4);
+```
+* 이 둘의 **모든 가능한 조합(쌍)**을 만들고 싶다면? 
+  * map만 쓰면 중첩된 스트림이 생김
+```java
+numbers1.stream()
+        .map(i -> numbers2.stream().map(j -> new int[]{i, j}))
+```
+  * Stream<Stream<int[]>> 가 되어버림. 내가 원하는 건 모든 (i,j) 쌍의 스트림 하나!
+* 그래서 flatMap으로 중첩 제거가 필요함.
+
+### 2) flatMap + filter 조합 (실무에서 가장 많이 쓰는 패턴)
+* 예를 들어, 두 숫자 조합 중 i + j가 짝수인 조합만 고르고 싶다면:
+```java
+numbers1.stream()
+    .flatMap(i -> numbers2.stream()
+        .filter(j -> (i + j) % 2 == 0)
+        .map(j -> new int[]{i, j})
+    )
+```
+  * flatMap으로 조합 생성 
+  * filter로 조건 적용	
+  * map으로 pair 생성
+* 이렇게 “flatMap → (필요 시 filter) → map” 형태가 실무 스트림 파이프라인의 정석 패턴이다.
+
+### 연습 문제
