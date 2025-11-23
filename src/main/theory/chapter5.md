@@ -119,4 +119,31 @@ numbers1.stream()
   * map으로 pair 생성
 * 이렇게 “flatMap → (필요 시 filter) → map” 형태가 실무 스트림 파이프라인의 정석 패턴이다.
 
-### 연습 문제
+### 연습 문제 1
+* 다음 단어 목록이 있다 :
+```java
+List<String> words1 = Arrays.asList("java", "spring", "cloud");
+List<String> words2 = Arrays.asList("boot", "core", "ai");
+```
+* 다음 조건을 모두 만족하는 **단어 쌍 (w1, w2)**를 만들어라.
+  1. 모든 가능한 단어 조합을 만든다. 
+  2. 각 쌍의 길이 합을 구한다.
+  3. 길이 합이 10 이상인 단어 조합만 남긴다.
+  4. 출력은 다음과 같은 리스트 형식이어야 한다:
+* 출력 예시
+```java
+[java-boot(8), spring-core(??), ...]
+```
+* [해답](../java/part5/prac4/Example1.java)
+
+### 연습 문제 2
+다음 리스트가 있다:
+```java
+List<Integer> A = Arrays.asList(1, 2, 3, 4);
+List<Integer> B = Arrays.asList(5, 6, 7);
+```
+* 요구조건
+  1. 두 리스트 A와 B의 모든 가능한 조합 (a, b)를 만든다
+  2. 두 수의 차이(|a - b|) 가 홀수인 경우만 남겨라
+  3. 조건을 만족하는 조합을 다음 문자열 포맷으로 변환하라:
+* [해답](../java/part5/prac4/Example2.java)
