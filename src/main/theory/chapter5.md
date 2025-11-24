@@ -271,3 +271,53 @@ List<String> words = Arrays.asList("java", "stream", "lambda", "reduce");
 * [해답](../java/part5/prac6/Example2.java)
 
 ## 기본형 스트림
+* Integer, Long, Double은 모두 객체라서 오토박싱/언박싱 비용 발생 
+* 예를 들어 다음과 같은 상황에서 비용이 발생한다.
+```java
+Stream<Integer> → int
+```
+* 그래서 등장한 것이 기본형 스트림 3종류 : IntStream, LongStream, DoubleStream
+  * 오토박싱/언박싱 비용 제거
+  * sum(), count(), average() 등 빠른 연산 제공
+  * OptionalInt, OptionalLong 같은 primitive Optional 제공
+
+### 객체 스트림 -> 기본형 스트림
+* `mapToInt()`, `mapToDouble()`, `mapToLong()`
+* 객체 스트림을 기본형 스트림으로 변환하는 메서드들.
+```java
+int calories = menu.stream()
+        .mapToInt(Dish::getCalories)
+        .sum();
+```
+
+### 기본형 스트림 -> 객체 스트림
+* `boxed()` 라는 메소드를 사용하면 됨.
+```java
+IntStream.range(1,5)
+    .boxed() 
+    .collect(toList());   // Stream<Integer> 로 변환됨
+```
+
+### IntStream : 대표 연산들
+* sum(), max(), average(), range(), rangeClosed()
+```java
+OptionalInt max = IntStream.of(1,4,2).max();
+OptionalInt max = IntStream.of(1,4,2).max();
+OptionalDouble avg = IntStream.of(1,4,2).average();
+IntStream.range(1, 5);      // 1,2,3,4
+IntStream.rangeClosed(1, 5); // 1,2,3,4,5
+```
+
+### OptionalInt / OptionalDouble / OptionalLong
+* 기본형 스트림 전용 Optional 타입.
+```java
+OptionalInt max = IntStream.of().max();
+System.out.println(max.orElse(0)); // 값 없으면 0 사용
+```
+
+### 연습문제
+1. IntStream으로 칼로리 총합 구하기 (dish 리스트 이용)
+* [해답]()
+2. 
+
+3. 
