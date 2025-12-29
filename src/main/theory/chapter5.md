@@ -326,7 +326,56 @@ System.out.println(max.orElse(0)); // 값 없으면 0 사용
 * [해답](../java/part5/prac7/Example2.java)
 
 ## 스트림 만들기
+스트림은 보통 collection.stream()으로 만들지만,
+자바는 컬렉션 없이도 스트림을 생성하는 다양한 방법을 제공한다.
+
+여기서는 크게 6가지 방법을 소개한다.
+
 ### 값으로 스트림 만들기
+✔ Stream.of()
+```java
+Stream<String> stream = Stream.of("Java", "Spring", "Cloud");
+```
 
+✔ IntStream.of()
+```java
+IntStream intStream = IntStream.of(1, 2, 3, 4);
+```
 
-### 
+### 배열(Array)에서 스트림 만들기
+✔ Arrays.stream()
+```java
+int[] numbers = {1, 2, 3, 4, 5};
+IntStream intStream = Arrays.stream(numbers);
+```
+
+```java
+Stream<int[]> s = Stream.of(new int[]{1,2,3});
+```
+
+### 파일로 스트림 만들기
+* 파일의 각 줄을 String 스트림으로 생성 
+* try-with-resources 필수! (close()는 쓸 필요 없음.)
+```java
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+Stream<String> lines = Files.lines(Paths.get("data.txt"));
+```
+* [파일에서 고유한 단어를 찾는 예제](../java/part5/prac8/Example2.java)
+
+### 함수로 무한 스트림 만들기
+✔ generate()라는 메소드 사용
+```java
+Stream.generate(Math::random)
+      .limit(5)
+      .forEach(System.out::println);
+```
+
+* 출력은 다음과 같음
+```text
+0.34
+0.92
+0.12
+...
+```

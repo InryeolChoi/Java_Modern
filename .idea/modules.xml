@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.example.modernJava.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.example.modernJava.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/modernJava.iml" filepath="$PROJECT_DIR$/.idea/modules/modernJava.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/modernJava.main.iml" filepath="$PROJECT_DIR$/.idea/modules/modernJava.main.iml" />
     </modules>
   </component>
 </project>
