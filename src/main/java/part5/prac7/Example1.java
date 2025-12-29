@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.OptionalDouble;
 import java.util.stream.IntStream;
 
-public class Example {
+public class Example1 {
     static List<Dish> menu = Arrays.asList(
             new Dish("pork", false, 800),
             new Dish("beef", false, 700),
@@ -18,12 +18,15 @@ public class Example {
     );
 
     public static void main(String[] args) {
+        // 1번 문제
         int sum = menu.stream().mapToInt(Dish::getCalories).sum();
         System.out.println(sum);
 
+        // 2번 문제
         OptionalDouble avg = menu.stream().mapToDouble(Dish::getCalories).average();
         System.out.println(avg.orElse(0));
 
+        // 3번 문제
         int evensum = IntStream.rangeClosed(1, 100).filter(i -> i % 2 == 0).sum();
         System.out.println(evensum);
     }

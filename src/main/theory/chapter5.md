@@ -315,9 +315,18 @@ OptionalInt max = IntStream.of().max();
 System.out.println(max.orElse(0)); // 값 없으면 0 사용
 ```
 
-### 연습문제
+### 연습문제 1
 1. IntStream으로 칼로리 총합 구하기 (dish 리스트 이용)
-* [해답]()
-2. 
+2. IntStream으로 평균 칼로리 구하기 (dish 리스트 이용)
+3. 1~100 사이 짝수만 합하기
+* [해답](../java/part5/prac7/Example1.java)
 
-3. 
+### 연습문제 2 : 피타고라스 수
+* 피타고라스 수 만들기
+* [해답](../java/part5/prac7/Example2.java)
+
+## 스트림 만들기
+### 값으로 스트림 만들기
+
+
+### 
