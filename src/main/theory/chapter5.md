@@ -365,17 +365,14 @@ Stream<String> lines = Files.lines(Paths.get("data.txt"));
 * [파일에서 고유한 단어를 찾는 예제](../java/part5/prac8/Example2.java)
 
 ### 함수로 무한 스트림 만들기
-✔ generate()라는 메소드 사용
-```java
-Stream.generate(Math::random)
-      .limit(5)
-      .forEach(System.out::println);
+1) iterate — 이전 요소 기반 “순차적 수열 생성기”
+```
+Stream.iterate(seed, n -> 다음값)
 ```
 
-* 출력은 다음과 같음
-```text
-0.34
-0.92
-0.12
-...
+2) generate — 매번 새로운 값을 “독립적으로” 생성
 ```
+Stream.generate(() -> 값)
+```
+* 매번 Supplier가 호출되어 전혀 새로운 값을 생성한다.
+* ex. `Stream.generate(Math::random)`
