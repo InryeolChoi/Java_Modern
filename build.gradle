@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'application'
+    id 'me.champeau.jmh' version '0.7.2'
 }
 
 group = 'com.example'
@@ -17,8 +18,17 @@ repositories {
 dependencies {
     compileOnly("org.projectlombok:lombok:1.18.38")
     annotationProcessor("org.projectlombok:lombok:1.18.38")
+
+    jmh("org.openjdk.jmh:jmh-core:1.37")
+    jmh("org.openjdk.jmh:jmh-generator-annprocess:1.37")
 }
 
 application {
     mainClass = 'part1.practice'
+}
+
+jmh {
+    fork = 1
+    warmupIterations = 2
+    iterations = 3
 }

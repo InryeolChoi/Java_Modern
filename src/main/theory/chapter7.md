@@ -28,4 +28,25 @@ list.parallelStream()
 * 벤치마크 도구로 JMH(Java Microbenchmark Harness), 빌드도구로는 Gradle을 사용
   * 책에서는 Maven을 사용했지만, Gradle로 변경
   * JMH란? OpenJDK 팀이 직접 만든 공식 마이크로벤치마크 도구
-  * 워밍업 자동 수행, JIT 최적화, 병렬 환경을 통해 해결해줌
+
+* 주의사항?
+  * JMH은 src 폴더 밑에 따로 만들어야 함.
+  * Gradle 설정이 중요하므로, 이 부분도 잘 확인하기
+  * Gradle 설정 내역은 build.gradle 참조
+  * 테스트 코드는 여기를 [클릭](../../jmh/java/part7/StreamBenchmark.java)
+
+* JMH는 다음 명령어를 통해 실행함 (IDE 상의 버튼으로 실행하는 건 비추.)
+```bash
+./gradlew clean jmh
+```
+
+* 해당 테스트 코드의 결과는 다음과 같음. (MacBook Air 15, M3 기준)
+```text
+Benchmark                      Mode  Cnt  Score   Error  Units
+StreamBenchmark.parallelSum    avgt    3  3.156 ± 1.032  ms/op
+StreamBenchmark.sequentialSum  avgt    3  5.688 ± 2.345  ms/op
+```
+* ms/op : 1번의 연산 당 걸린 시간 (ms : 1/1000초)
+* 병렬이 약 1.8배 빠름
+
+## 
