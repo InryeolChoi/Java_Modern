@@ -1,7 +1,5 @@
 package part7;
 
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ForkJoinTask;
 import java.util.stream.LongStream;
 
 public class ForkJoinSumCalculator

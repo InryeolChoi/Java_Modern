@@ -45,7 +45,6 @@ list.parallelStream()
 ./gradlew clean jmh -Pjmh.include=(클래스이름)
 ```
 
-
 * 해당 테스트 코드의 결과는 다음과 같음. (MacBook Air 15, M3 기준)
 ```text
 Benchmark                      Mode  Cnt  Score   Error  Units
@@ -55,7 +54,7 @@ StreamBenchmark.sequentialSum  avgt    3  5.688 ± 2.345  ms/op
 * ms/op : 1번의 연산 당 걸린 시간 (ms : 1/1000초)
 * 병렬이 약 1.8배 빠름
 
-## 포크/조인 프레임워크
+### 포크/조인 프레임워크
 * 인제 병렬 스트림이 실제로 어떻게 이뤄지는지 바닥부터 보자!
 * 실제로 ForkJoinSumCalculator를 만들어보면서 확인하기
 * 해당 코드는 [여기](../java/part7/ForkJoinSumCalculator.java)를 참조.
@@ -65,3 +64,9 @@ Benchmark                         Mode  Cnt   Score   Error  Units
 ForkJoinSumBenchmark.forkJoinSum  avgt    3  13.569 ± 2.518  ms/op
 ```
 
+## Spliterator 인터페이스
+* Spliterator란? iterator + split
+  * 기존 iterator는 한 방향 순회만 가능.
+  * Spliterator란 방향을 나눠서 순회 가능 
+* 왜 이걸 스트림에 쓰지? 병렬화를 안전하고 자동으로 하기 위해서
+* 
