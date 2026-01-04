@@ -7,7 +7,7 @@ group = 'com.example'
 version = '1.0-SNAPSHOT'
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17 // 너가 사용하는 자바 버전에 맞게!
+    sourceCompatibility = JavaVersion.VERSION_17
 }
 
 repositories {
@@ -20,5 +20,5 @@ dependencies {
 }
 
 application {
-    mainClass = 'part1.practice' // 패키지명을 포함한 Main 클래스 경로
+    mainClass = 'part1.practice'
 }
