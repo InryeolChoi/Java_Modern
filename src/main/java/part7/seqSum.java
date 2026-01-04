@@ -1,4 +1,4 @@
-package part7.prac1;
+package part7;
 
 import java.util.stream.Stream;
 import java.util.Scanner;

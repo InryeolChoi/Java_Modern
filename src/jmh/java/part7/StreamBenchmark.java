@@ -34,3 +34,8 @@ public class StreamBenchmark {
                 .sum();
     }
 }
+
+/*
+ * Bash에서 실행할 때의 코드는 아래와 같음.
+ * ./gradlew clean jmh -Pjmh.include=^Part7.StreamBenchmark$
+ * */
