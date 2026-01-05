@@ -67,8 +67,8 @@ ForkJoinSumBenchmark.forkJoinSum  avgt    3  13.569 ± 2.518  ms/op
 ## Spliterator 인터페이스
 * Spliterator란? iterator + split
   * 기존 iterator는 한 방향 순회만 가능.
-  * Spliterator란 방향을 나눠서 순회 가능 
-* 각 쓰레드별로 자료구조를 어디서부터 읽을지 가르켜주는 iterator라고 생각하면 됨!
+  * Spliterator는 데이터를 나눠서 각 쓰레드별로 순회 가능 
+* 작업 단위별로 자료구조를 어디서부터 읽을지 가르켜주는 iterator라고 생각하면 됨!
 * 왜 이걸 스트림에 쓰지? 병렬화를 안전하고 자동으로 하기 위해서
 
 ### 커스텀 Spliterator 구현
@@ -91,7 +91,7 @@ ForkJoinSumBenchmark.forkJoinSum  avgt    3  13.569 ± 2.518  ms/op
 * 이걸 활용해서 각 쓰레드가 읽을 부분을 지정 후에 코드를 실행
 ```text
 Spliterator<Character> spliterator = new WordCounterSpliterator(SENTENCE);    // SENTENCE를 어떻게 쪼갤지를 규칙이 담긴 iterator를 만듬.
-Stream<Character> stream2 = StreamSupport.stream(spliterator, false); // 그걸 가지고 실제 스트림을 만든다.
+Stream<Character> stream2 = StreamSupport.stream(spliterator, false);         // 그걸 가지고 실제 스트림을 만든다.
 System.out.println("단어 수 : " + s2.countWords(stream2.parallel()));          // 병렬로 스트림을 돌린다.
 ```
 4. [모든 내용은 여기 참조](../java/part7/WordCounterTest.java)
