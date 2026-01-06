@@ -43,8 +43,19 @@ roles.add("ADMIN");
 2. 사용자 입력 누적
 3. 상태 변화가 중요한 도메인
 
-* 
+[예시코드는 이곳을 클릭](../java/part8/example1.java)
+
+## 리스트와 집합처리
+* 자바 8에서 List, Set 인터페이스 추가된 메서드
+### `removeif()` 메서드
+```text
 
 
+```
 
+### `replaceAll()` 메서드
+```text
+
+
+```
 
