@@ -62,33 +62,16 @@ roles.add("ADMIN");
 * [예시 : removeAll()](../java/part8/example2.java)
 
 # 8.3 Map API 개선
-## `forEach()` 메서드
-* 맵의 키/값을 반복하면서 확인해야 하는 문제를 해결하기에 적합 
-* [예시 : 단어 빈도수 확인](../java/part8/example3.java)
+> Map을 위한 여러가지 메서드 
 
-## 정렬 메서드
-* 
-* [예시 : 단어 빈도수 확인](../java/part8/example3.java)
+1. `forEach()` 메서드 : 맵의 키/값을 반복하면서 확인해야 하는 문제를 해결하기에 적합
+2. 정렬 메서드 : 값이나 키를 기준으로 정렬하는 메소드
+3. `getOrDefault()` 메서드 : NullPointerException을 방지하기 위한 메서드. 찾으려는 키가 없으면 
+기본값을 반환해준다.
+4. 계산 패턴 : 맵에 키가 존재하는지의 여부에 따라 동작을 실행하는 메소드들
+5. 삭제 패턴 : 맵에 키가 특정한 값과 연관되었을 때만의 항목을 제거하는 오버로드 버전의 `remove()`
+6. `Replace()`, `replaceAll()` : 맵의 항목 변경
+7. `merge()` : 두 맵을 합치는 메소드
 
-## `getOrDefault()` 메서드
-* 
-* 
 * [예시코드는 이곳을 클릭](../java/part8/example3.java)
 
-## 계산 패턴
-* 
-* [예시코드는 이곳을 클릭](../java/part8/example3.java)
-
-## 삭제 패턴
-*
-* [예시코드는 이곳을 클릭](../java/part8/example3.java)
-
-## 교체 패턴
-*
-* [예시코드는 이곳을 클릭](../java/part8/example3.java)
-
-## 합침
-*
-* [예시코드는 이곳을 클릭](../java/part8/example3.java)
-
-# 
