@@ -48,16 +48,47 @@ roles.add("ADMIN");
 ## 리스트와 집합처리
 * 자바 8에서 List, Set 인터페이스 추가된 메서드
 
-### `removeif()` 메서드
+### `removeIf()` 메서드
 * 직접 iterator를 관리하지 않고 원하는 자료구조 내의 데이터를 삭제할 수 있음.
 * ConcurrentModificationException를 방지할 수 있음.
   * ConcurrentModificationException란? 하나의 컬렉션을 순회(iteration) 중에 구조를 변경(structural modification)했을 때 발생하는 런타임
   * 동시에 순회와 수정이 발생하면 생기는 오류
 * 단, 불변 컬렉션(선언할 때 of 메소드를 쓴 자료구조)는 쓸 수 없음.
-* [예시코드는 이곳을 클릭](../java/part8/example2.java)
+* [예시 : removeIf()](../java/part8/example2.java)
 
-### `replaceAll()` 메서드
+### `removeAll()` 메서드
 * 리스트의 모든 요소를 주어진 규칙으로 치환하는 메소드
+* 전체 요소를 한 번씩만 처리하며, 인덱스 관리 불필요하고, 명확한 의도 표현이 가능함.
+* [예시 : removeAll()](../java/part8/example2.java)
+
+# 8.3 Map API 개선
+## `forEach()` 메서드
+* 맵의 키/값을 반복하면서 확인해야 하는 문제를 해결하기에 적합 
+* [예시 : 단어 빈도수 확인](../java/part8/example3.java)
+
+## 정렬 메서드
+* 
+* [예시 : 단어 빈도수 확인](../java/part8/example3.java)
+
+## `getOrDefault()` 메서드
+* 
 * 
 * [예시코드는 이곳을 클릭](../java/part8/example3.java)
 
+## 계산 패턴
+* 
+* [예시코드는 이곳을 클릭](../java/part8/example3.java)
+
+## 삭제 패턴
+*
+* [예시코드는 이곳을 클릭](../java/part8/example3.java)
+
+## 교체 패턴
+*
+* [예시코드는 이곳을 클릭](../java/part8/example3.java)
+
+## 합침
+*
+* [예시코드는 이곳을 클릭](../java/part8/example3.java)
+
+# 
