@@ -78,24 +78,27 @@ roles.add("ADMIN");
 # 개선된 ConcurrentHashMap
 > ConcurrentHashMap이란? 동시성 친화적인 HashMap
 > 내부적으로 락 분할(lock striping) 또는 CAS를 사용해 여러 스레드가 동시에 다른 영역에 접근 가능
+> 따라서 순회 중 구조 변경이 발생해도 예외를 던지지 않음 (weakly consistent)
 
 ## 리듀스와 검색
 * `forEach()`, `reduce()`, `search()`
-* 세 가지 메소드 모두 조건부 병렬화가 가능. 첫 번째 인자에는 Int 값, 두 번째 인자에는 키와 값을 집어넣음.  
-맵 크기가 이 값보다 크면 병렬로 실행, 작으면 단일 스레드로 실행.
-* 첫 번째 인자를 parallelismThreshold라고 하며, 병렬 오버헤드 방지 장치
-  * parallelismThreshold는 null 허용 안 함
-  * 순서 보장 없음
+* 세 가지 메소드 모두 조건부 병렬화가 가능
+    * 첫 번째 인자: parallelismThreshold (int)
+    * Map 크기가 이 값보다 크면 병렬 실행, 작으면 단일 스레드 실행
+* `forEach`, `search`는 `(K, V)`를 사용하고  
+  `reduce`는 `(K, V)`를 결과 타입으로 변환한 뒤 결합 함수를 적용
+* 병렬 실행 시 순서 보장 없음
+* parallelismThreshold는 병렬 오버헤드를 제어하기 위한 장치
 * [예시코드는 이곳을 클릭](../java/part8/example4.java)
 
 ## 계수
-* `mappingCount()` : 맵의 매핑 갯수를 반환하는 메소드.
-* `size()`는 안되나? `size()`는 정확한 값을 보장하려면 내부적으로 모든 버킷을 검사해야 함.
-* 따라서 size보다 동시성 친화적인 `mappingCount()`가 나옴.
+* `mappingCount()` : 맵의 매핑 개수를 반환하는 메소드 (long 타입)
+* `size()`는 정확한 값을 보장하려면 내부적으로 모든 버킷을 검사해야 하므로 비용이 큼
+* 따라서 동시성 환경에서는 size보다 `mappingCount()`가 더 적합
 * [예시코드는 이곳을 클릭](../java/part8/example4.java)
 
 ## 집합뷰
-* `keySet()` : ConcurrentHashMap을 집합으로 바꿀 수 있는 메소드.
-* 
-* 
+* `keySet()` : ConcurrentHashMap을 집합 뷰로 제공
+* Map과 실시간으로 연결된 live view로, 추가/삭제 시 Map과 연동됨
+* 순회 중 구조 변경이 발생해도 예외를 던지지 않음 (weakly consistent)
 * [예시코드는 이곳을 클릭](../java/part8/example4.java)
