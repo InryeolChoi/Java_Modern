@@ -13,3 +13,7 @@ JDK 8 이후의 자바 공부 + 다양 기능 활용
 * [chapter5](./src/main/theory/chapter5.md)
 * [chapter6](./src/main/theory/chapter6.md)
 * [chapter7](./src/main/theory/chapter7.md)
+
+## Part3 : 스트림 & 람다식의 활용
+* [chapter8](./src/main/theory/chapter8.md)
+* [chapter9](./src/main/theory/chapter9.md)
