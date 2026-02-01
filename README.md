@@ -21,4 +21,5 @@ JDK 8 이후의 자바 공부 + 다양 기능 활용
 
 ## Part4 : 매일 자바와 함께
 * [chapter11](./src/main/theory/chapter11.md) : null 대신 Optional 클래스
-
+* (12장은 현재 제외. 추후 필요시 작성)
+* [chapter13]()

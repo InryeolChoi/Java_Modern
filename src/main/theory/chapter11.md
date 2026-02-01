@@ -5,6 +5,7 @@ Optional<T>
 ```
 * Null이 있을수도 있음을 확인하고 쓰는 안전장치!
 * T 타입의 값이 있을수도, 없을수도 있다!
+* **단, 클래스의 변수 선언(필드)용으로는 쓸 수 없음!**
 
 **만드는 방법**
 ```text
@@ -35,10 +36,31 @@ Optional<Insurance> optIns = Optional.ofNullable(insurance);
 Optional<String> name = OptIns.map(Insurance::getName);
 ```
 
-```text
-public String getCarInsuranceName(Person person) {
-    return person.getCar().getInsurance().getName();
-}
-``` 
-
 ### flatMap으로 Optional 객체 연결
+* 맵을 쓰다보면, 여러개의 Optional이 겹쳐있는 경우가 있다.
+```text
+Optional<Car> car = Optional.of(
+    new Car(Optional.of(new Insurance("AXA")))
+);
+
+??? result =
+    car.map(Car::getInsurance);
+```
+
+* 여기서 ???의 결과는 `Optional<Optional<Insurance>>`이다.
+* 쓰기도 불편하고, 활용도 잘 못할 거 같은 걸 방지하기 위해 `flatmap()`을 사용함.
+* 만약 값이 NULL인 경우, `orElse()`를 통해 기본값을 부여할 수 있음.
+```text
+Optional<String> name = person
+        .flatMap(Person::getCar)
+        .flatMap(Car::getInsurance)
+        .map(Insurance::getName)
+        .orElse("unknown");
+```
+
+### Optional 스트림 조작
+```text
+
+```
+* 값이 없을 수 있음
+* 
