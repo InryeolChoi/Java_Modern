@@ -57,10 +57,24 @@ Optional<String> name = person
         .map(Insurance::getName)
         .orElse("unknown");
 ```
+* 예제코드는 다음 [링크](../java/part11/OptionalExample.java)를 참조.
 
 ### Optional 스트림 조작
-```text
+> Optional이 섞인 컬렉션을 Stream으로 “자연스럽게” 처리해보자.
 
-```
-* 값이 없을 수 있음
-* 
+* 예제코드는 다음 [링크](../java/part11/OptionalExample2.java)를 참조.
+* `Optional::stream` : Optional 객체를 0개 또는 1개의 요소를 가지는 Stream으로 변환
+* 이를 `flatmap()`과 같이 쓰면 Stream 안에 섞여 있는 Optional을 “없애고 값만 남긴다” 는 것
+
+### 디폴트 액션과 Optional 언랩
+> 어떻게 하면 Optional을 벗길 수 있을까?
+
+| 상황                      | 선택             | 
+|-------------------------|----------------|
+| 기본값이 필요                 | orElse         |
+| 기본값이 필요 + 기본값으로 람다 실행 시 | orElseGet      |
+| 없으면 오류                  |  orElseThrow   |
+| 값이 있을 때만 행동             | ifPresent      |
+| 있/없 둘 다 처리              | ifPresentOrElse |
+
+* 예제코드는 다음 [링크](../java/part11/OptionalExample3.java)를 참조.
