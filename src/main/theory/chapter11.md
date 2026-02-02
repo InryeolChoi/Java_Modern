@@ -78,3 +78,36 @@ Optional<String> name = person
 | 있/없 둘 다 처리              | ifPresentOrElse |
 
 * 예제코드는 다음 [링크](../java/part11/OptionalExample3.java)를 참조.
+
+### 두 Optional 합치기
+* 두 값이 “모두 있을 때만” 계산하고 싶으면 flatMap + map을 쓴다.
+* ex. a와 b를 합치고 싶다면?
+```text
+Optional<Integer> a = Optional.of(10);
+Optional<Integer> b = Optional.of(20);
+
+Optional<Integer> sum = 
+    a.flatmap(x ->
+        b.map(y -> x + y)
+    );
+```
+
+* Optional 합치는 전용 메서드는 없음. 
+  * Optional은 컬렉션이 아님
+* 따라서 복잡한 조합은 Stream으로 가야 함.
+
+### 필터로 특정값 거르기
+> 조건을 만족하지 않으면 Optional을 비워버린다
+```text
+Optional<T>.filter(Predicate<? super T>)
+```
+
+* 값이 있고 조건을 만족하면 → 그대로 유지 
+* 불만족하면 → Optional.empty()
+* ex. 홀짝 구분 예제
+```text
+Optional<Integer> opt = Optional.of(10);
+
+Optional<Integer> even =
+    opt.filter(n -> n % 2 == 0);
+```
