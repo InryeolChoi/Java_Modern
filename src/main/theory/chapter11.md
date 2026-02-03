@@ -108,6 +108,21 @@ Optional<T>.filter(Predicate<? super T>)
 ```text
 Optional<Integer> opt = Optional.of(10);
 
-Optional<Integer> even =
-    opt.filter(n -> n % 2 == 0);
+Optional<Integer> even = opt.filter(n -> n % 2 == 0);
 ```
+
+## Optional을 올바르게 사용하는 방법
+* null이 될 수 있는 대상을 Optional로 감싸기 
+  * null을 숨기기 위해 
+  * 값의 부재 가능성을 API에 드러내기 위해서 ✅
+
+* 예외와 Optional 클래스
+  * 
+  * 
+
+* 기본형 Optional을 사용하지 말아야 하는 이유
+  * 
+  * 
+
+* 응용
+  * 
