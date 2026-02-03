@@ -112,17 +112,44 @@ Optional<Integer> even = opt.filter(n -> n % 2 == 0);
 ```
 
 ## Optional을 올바르게 사용하는 방법
-* null이 될 수 있는 대상을 Optional로 감싸기 
-  * null을 숨기기 위해 
-  * 값의 부재 가능성을 API에 드러내기 위해서 ✅
+### Optional은 무엇을 위해 설계되었나?
+>> null을 숨기기 위해가 아닌, 값의 부재 가능성을 API에 드러내기 위해서
 
-* 예외와 Optional 클래스
-  * 
-  * 
+### Optional을 써도 되는 곳
+1. 메서드 반환 타입
+* 호출자가 반드시 대응하도록 강제
+* null 반환보다 훨씬 명확
+```text
+Optional<Insurance> findInsurance(Person p);
+```
 
-* 기본형 Optional을 사용하지 말아야 하는 이유
-  * 
-  * 
+2. Stream 파이프라인 중간 
+* 값이 없으면 자연스럽게 탈락 
+* if / null 체크 없음
+```text
+stream
+    .map(this::findInsurance)   // Stream<Optional<Insurance>>
+    .flatMap(Optional::stream) // Stream<Insurance>
+```
 
-* 응용
-  * 
+3. 계산 결과를 감쌀 때
+* “계산 결과가 없을 수 있음”을 자연스럽게 표현
+```text
+Optional<Integer> max = list.stream().max(Integer::compare);
+```
+
+### Optional을 쓰지 말아야 할 곳
+1. 필드 (클래스의 변수)
+* 왜 안 되나? 객체는 상태를 가지는데, Optional은 결과 표현용이다 
+* 필드에 쓰면 다음과 같은 결과를 초래
+  * 직렬화 복잡 ()
+  * getter 체인 지옥 (getter 안에 flatmap() 만들고 난리쳐야 함.)
+  * 설계 의도 불분명 (값이 없을꺼면 왜 선언했지?)
+
+2. 메서드의 파라미터
+* 호출자가 Optional을 만들 책임을 떠안음 
+* API가 불필요하게 장황해짐
+
+3. 컬렉션 요소
+* 컬렉션 자체가 “0개 이상”을 표현 
+* Optional의 의미와 중복
