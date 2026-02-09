@@ -21,6 +21,12 @@ dependencies {
 
     jmh("org.openjdk.jmh:jmh-core:1.37")
     jmh("org.openjdk.jmh:jmh-generator-annprocess:1.37")
+
+    // HTTP 통신용 (자바 기본 HttpClient 써도 되지만 가독성 위해 추가)
+    implementation 'org.apache.httpcomponents.client5:httpclient5:5.3'
+    implementation 'org.apache.httpcomponents.client5:httpclient5-fluent:5.3'
+
+    implementation 'org.slf4j:slf4j-simple:2.0.9'
 }
 
 application {
