@@ -23,6 +23,7 @@ JDK 8 이후의 자바 공부 + 다양 기능 활용
 * [chapter11](./src/main/theory/chapter11.md) : null 대신 Optional 클래스
 * (12장은 현재 제외. 추후 필요시 작성)
 * [chapter13](./src/main/theory/chapter13.md) : 디폴트 메서드
-* [chapter14](./src/main/theory/chapter14.md) : 자바 모듈 시스템
+* (14장은 현재 제외. 추후 필요시 작성)
 
 ## Part5 : 개선된 자바 동시성
+* [chapter15](./src/main/theory/chapter15.md)
