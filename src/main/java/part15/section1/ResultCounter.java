@@ -1,7 +1,10 @@
 package part15.section1;
 
-public class ResultCounter {
+import lombok.*;
 
+@NoArgsConstructor
+@Getter
+public class ResultCounter {
     private int successCount = 0;
     private int completedCount = 0;
 
@@ -14,11 +17,4 @@ public class ResultCounter {
         completedCount++;
     }
 
-    public int getSuccessCount() {
-        return successCount;
-    }
-
-    public int getCompletedCount() {
-        return completedCount;
-    }
 }

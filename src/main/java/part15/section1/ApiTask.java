@@ -21,7 +21,6 @@ public class ApiTask implements Runnable {
             semaphore.acquire(); // 동시 요청 제한
 
             String url = "https://jsonplaceholder.typicode.com/todos/" + id;
-
             String response = Request.get(url)
                     .execute()
                     .returnContent()

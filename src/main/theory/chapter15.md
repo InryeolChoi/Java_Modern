@@ -18,24 +18,37 @@
   3) starvation
 - 또 여러가지 문제가 있으니...우선 발전 과정에 따라 하나하나 정리해보자!
 
-#### 3. 멀티쓰레딩 (1) : Runnable / Thread 클래스
+#### 3. 멀티쓰레딩 (1) : Runnable + Thread 클래스
 * 자바 1.0 버전에서 나옴.
 * Runnable 클래스 : 쓰레드가 할 일을 정한다.
 * Thread 클래스 : 실제 쓰레드
 - 인스턴스화를 할 때, Runnable 타입의 객체를 파라미터로 담아 쓰레드로 만든다.
 - 이렇게 분리를 하면 쓰레드 재사용, 실행 방식 조정, 상속 문제가 모두 해결되기 때문!
 
-* 예시코드 : 외부 인터넷 주소에서 값을 받아, completed=true 인 갯수를 계산!
-  * 최종결과 : 성공 요청 수 / completed=true 개수 / 전체 처리 시간
-  * [계산 로직](../../main/java/part15/section1/ResultCounter.java)
-  * [쓰레드 동작](../../main/java/part15/section1/ApiTask.java)
-  * [Main문](../../main/java/part15/section1/Main.java)
+* 예시코드 : 외부 인터넷 주소에서 값을 받아, 다음을 계산!
+  * API 안에는 `completed`라는 필드가 있고 true/false의 값이 들어간다.
+  * 최종결과 : 성공 요청 수, completed=true 개수
+  * 결과(성공 요청 수, completed=true 개수)를 계산하는 로직은 [다음과 같다](../../main/java/part15/section1/ResultCounter.java)
+  * 쓰레드 동작은 [다음 코드를 보면 된다.](../../main/java/part15/section1/ApiTask.java)
+    * 쓰레드 동작 안에 결과 계산 로직이 포함되어 있다.
+  * Main문은 [다음과 같다.](../../main/java/part15/section1/Main.java)
 
 * 문제점 :
   1. Thread를 직접 생성함 -> 비용이 커짐.
   2. 쓰레드 생명주기를 개발자가 직접 관리 -> 제어 포인트가 코드 전체에 흩어짐
-  3. 예외 처리 지옥
+  3. 결과(성공 요청 수, completed=true 개수)를 모으는 부분이 뮤택스로 묶여 있음 -> 데드락이 걸릴 수 있음.
+  4. 예외 처리(Try-catch) 지옥 -> 어떤 쓰레드에서 실패했는지 원인을 알기 힘듬
+  5. 요청이 늘어나면 쓰레드 생성이 폭발 -> 뮤택스/세마포어는 쓰레드들이 한번에 자원에 터치하는 걸 막아줄 뿐, 쓰레드가 태어나는 걸 막을 순 없음
 
-#### 3. 멀티쓰레딩 (2) : Callable / ExecutorService
+#### 3. 멀티쓰레딩 (2) : Callable + ExecutorService + Future
 * Callable / ExecutorService 모두 자바 5에서 등장
-* 
+* Callable 클래스 : **쓰레드가 할 일을 정하고...추가적인 장점이 있다!**
+  * 반환값이 있다! 값을 엄마 쓰레드로 가지고 올 수 있다 = 뮤택스/세마포어를 줄일 수 있다.
+  * 예외처리가 가능하다!
+* ExecutorService 클래스 : **쓰레드풀이란 걸 사용할 수 있다**
+  * 요청이 생길 때마다 쓰레드 만들기 X
+  * 쓰레드를 미리 갯수만큼 만들고, 필요할 때 쓰레드를 재활용!
+* Future 클래스 : **값을 받아오는 클래스**
+  * Callable
+
+* 예시코드 : 외부 인터넷 주소에서 값을 받아, 다음을 계산!
