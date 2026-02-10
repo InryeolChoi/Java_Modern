@@ -21,6 +21,7 @@ public class Main {
         int successCount = 0;
         int completedCount = 0;
 
+        // 쓰레드 작업을 받기
         for (Future<Boolean> future : futures) {
             try {
                 Boolean completed = future.get(); // 결과 + 예외
