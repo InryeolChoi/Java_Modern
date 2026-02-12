@@ -103,6 +103,20 @@ ExecutorService executor = Executors.newFixedThreadPool(n);
 * 결국 쓰레드에게 바라는 것은 병렬성의 장점을 극대화하도록 프로그램 구조를 만드는것
 * 프로그램을 작은 단위로 쪼개는 것
 
-### 
-
-
+## 동기 API vs 비동기 API
+* 함수 f와 g가 있다고 해보자. [(코드)](../../main/java/part15/ApiExample/Functions.java)
+```text
+public class Functions {
+    public static int f(int x) {
+        return x * 2;
+    }
+    public static int g(int x) {
+        return x + 1;
+    }
+}
+```
+* 함수 f와 g가 
+* 먼저 동기 방식의 멀티쓰레딩으로 f + g를 계산한 경우를 보자. [(코드)](../../main/java/part15/ApiExample/ThreadExample.java)
+  * 코드가 좀 복잡한 면이 있다.
+  * 프로그래머가 직접 자식쓰레드를 제어해야 한다.
+* 인제 Future를 
