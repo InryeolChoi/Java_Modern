@@ -1,32 +1,28 @@
 package part15.ApiExample;
 
+import java.util.function.IntConsumer;
+
 public class Functions {
 
-    // f(x): 비선형 미분방정식(로렌츠 시스템) RK4 적분 -> int로 해시
+    /* ============================================================
+       1️⃣ 동기 버전 f (Lorenz + RK4 + hash)
+    ============================================================ */
     public static int f(int x) {
-        // Lorenz parameters (classic)
         final double sigma = 10.0;
         final double rho   = 28.0;
         final double beta  = 8.0 / 3.0;
 
-        // initial condition derived from x (deterministic)
         double X = (x % 97) * 0.01 + 1.0;
         double Y = ((x / 97) % 97) * 0.01 + 1.0;
         double Z = ((x / (97 * 97)) % 97) * 0.01 + 1.0;
 
-        // step size and number of steps (heavy)
         final double dt = 0.0025;
-        final int steps = 200_000; // 꽤 무겁게
+        final int steps = 200_000;
 
-        long acc = 0x9E3779B97F4A7C15L; // mixing accumulator
+        long acc = 0x9E3779B97F4A7C15L;
 
         for (int i = 0; i < steps; i++) {
-            // Lorenz derivatives
-            // dX = sigma*(Y - X)
-            // dY = X*(rho - Z) - Y
-            // dZ = X*Y - beta*Z
 
-            // RK4
             double k1x = sigma * (Y - X);
             double k1y = X * (rho - Z) - Y;
             double k1z = X * Y - beta * Z;
@@ -55,116 +51,103 @@ public class Functions {
             double k4y = x4 * (rho - z4) - y4;
             double k4z = x4 * y4 - beta * z4;
 
-            X += (dt / 6.0) * (k1x + 2.0 * k2x + 2.0 * k3x + k4x);
-            Y += (dt / 6.0) * (k1y + 2.0 * k2y + 2.0 * k3y + k4y);
-            Z += (dt / 6.0) * (k1z + 2.0 * k2z + 2.0 * k3z + k4z);
+            X += (dt / 6.0) * (k1x + 2*k2x + 2*k3x + k4x);
+            Y += (dt / 6.0) * (k1y + 2*k2y + 2*k3y + k4y);
+            Z += (dt / 6.0) * (k1z + 2*k2z + 2*k3z + k4z);
 
-            // occasional mixing (avoid NaN drift; keep deterministic)
             if ((i & 1023) == 0) {
                 long hx = Double.doubleToLongBits(X);
                 long hy = Double.doubleToLongBits(Y);
                 long hz = Double.doubleToLongBits(Z);
-                long m = hx ^ (hy * 0xBF58476D1CE4E5B9L) ^ (hz * 0x94D049BB133111EBL) ^ i;
+                long m = hx ^ hy ^ hz ^ i;
                 acc ^= m;
                 acc *= 0x9E3779B97F4A7C15L;
                 acc ^= (acc >>> 27);
             }
         }
 
-        // fold to int
         acc ^= (acc >>> 33);
-        acc *= 0xC2B2AE3D27D4EB4FL;
-        acc ^= (acc >>> 29);
-        return (int) (acc ^ (acc >>> 32));
+        return (int)(acc ^ (acc >>> 32));
     }
 
-    // g(x): seed로 행렬 생성 -> power iteration으로 주고유값 근사 -> int로 해시
-    public static int g(int x) {
-        // matrix size (moderate but heavy)
-        // 48~64 정도면 꽤 빡셈. (너무 키우면 진짜 오래 걸려서 이 정도로)
-        final int n = 56 + (Math.abs(x) % 9); // 56~64
+    /* ============================================================
+       2️⃣ 콜백 버전 f
+    ============================================================ */
+    public static void f(int x, IntConsumer callback) {
+        new Thread(() -> {
+            int result = f(x);   // 동일 계산
+            callback.accept(result);
+        }).start();
+    }
 
-        // pseudo-random generator state from x (deterministic)
+
+    /* ============================================================
+       3️⃣ 동기 버전 g (Matrix + Power Iteration + hash)
+    ============================================================ */
+    public static int g(int x) {
+
+        final int n = 56 + (Math.abs(x) % 9);
         long state = (x * 0x9E3779B9L) ^ 0xD1B54A32D192ED03L;
 
-        // build a dense matrix A (stored row-major)
         double[] A = new double[n * n];
-        for (int i = 0; i < n * n; i++) {
-            // xorshift64*
+
+        for (int i = 0; i < A.length; i++) {
             state ^= (state >>> 12);
             state ^= (state << 25);
             state ^= (state >>> 27);
             long r = state * 0x2545F4914F6CDD1DL;
-
-            // map to (-1, 1) and bias diagonal to make spectral radius stable
-            double v = ((r >>> 11) * (1.0 / (1L << 53))) * 2.0 - 1.0;
-            A[i] = v * 0.15;
+            A[i] = (((r >>> 11) * (1.0 / (1L << 53))) * 2.0 - 1.0) * 0.15;
         }
+
         for (int i = 0; i < n; i++) {
-            A[i * n + i] += 1.25; // diagonal dominance
+            A[i*n + i] += 1.25;
         }
 
-        // power iteration: v <- A v / ||A v||
         double[] v = new double[n];
         double[] w = new double[n];
 
-        // init v from x
         for (int i = 0; i < n; i++) {
-            state ^= (state >>> 12);
-            state ^= (state << 25);
-            state ^= (state >>> 27);
-            long r = state * 0x2545F4914F6CDD1DL;
-            v[i] = (((r >>> 11) * (1.0 / (1L << 53))) * 2.0 - 1.0);
+            v[i] = 1.0 / n;
         }
 
-        // normalize v
-        double norm = 0.0;
-        for (int i = 0; i < n; i++) norm += v[i] * v[i];
-        norm = Math.sqrt(norm) + 1e-12;
-        for (int i = 0; i < n; i++) v[i] /= norm;
-
-        final int iters = 6_000; // 꽤 무겁게
         double lambda = 0.0;
 
-        for (int it = 0; it < iters; it++) {
-            // w = A v
+        for (int it = 0; it < 6000; it++) {
+
             for (int i = 0; i < n; i++) {
                 double sum = 0.0;
-                int row = i * n;
                 for (int j = 0; j < n; j++) {
-                    sum += A[row + j] * v[j];
+                    sum += A[i*n + j] * v[j];
                 }
                 w[i] = sum;
             }
 
-            // Rayleigh quotient approx: lambda = v^T w
-            double num = 0.0;
-            double den = 0.0;
+            double num = 0.0, den = 0.0;
             for (int i = 0; i < n; i++) {
                 num += v[i] * w[i];
                 den += v[i] * v[i];
             }
+
             lambda = num / (den + 1e-12);
 
-            // normalize w -> v
-            double wn = 0.0;
-            for (int i = 0; i < n; i++) wn += w[i] * w[i];
-            wn = Math.sqrt(wn) + 1e-12;
-            for (int i = 0; i < n; i++) v[i] = w[i] / wn;
+            double norm = 0.0;
+            for (int i = 0; i < n; i++) norm += w[i]*w[i];
+            norm = Math.sqrt(norm) + 1e-12;
 
-            // tiny perturb to avoid stagnation on some seeds
-            if ((it & 255) == 0) {
-                v[it % n] += 1e-9;
-            }
+            for (int i = 0; i < n; i++) v[i] = w[i] / norm;
         }
 
         long bits = Double.doubleToLongBits(lambda);
-        long mix = bits ^ (bits >>> 33);
-        mix *= 0xFF51AFD7ED558CCDL;
-        mix ^= (mix >>> 33);
-        mix *= 0xC4CEB9FE1A85EC53L;
-        mix ^= (mix >>> 33);
+        return (int)(bits ^ (bits >>> 32));
+    }
 
-        return (int) (mix ^ (mix >>> 32));
+    /* ============================================================
+       4️⃣ 콜백 버전 g
+    ============================================================ */
+    public static void g(int x, IntConsumer callback) {
+        new Thread(() -> {
+            int result = g(x);   // 동일 계산
+            callback.accept(result);
+        }).start();
     }
 }

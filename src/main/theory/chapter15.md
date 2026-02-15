@@ -105,18 +105,13 @@ ExecutorService executor = Executors.newFixedThreadPool(n);
 
 ## 동기 API vs 비동기 API
 * 함수 f와 g가 있다고 해보자. [(코드)](../../main/java/part15/ApiExample/Functions.java)
-```text
-public class Functions {
-    public static int f(int x) {
-        return x * 2;
-    }
-    public static int g(int x) {
-        return x + 1;
-    }
-}
-```
-* 함수 f와 g가 
+  * f와 g는 생각보다 복잡한 연산을 수행한다.
 * 먼저 동기 방식의 멀티쓰레딩으로 f + g를 계산한 경우를 보자. [(코드)](../../main/java/part15/ApiExample/ThreadExample.java)
   * 코드가 좀 복잡한 면이 있다.
-  * 프로그래머가 직접 자식쓰레드를 제어해야 한다.
-* 인제 Future를 
+  * 자식쓰레드의 흐름을 모두 엄마쓰레드가 정한다 = 직접 자식쓰레드의 모든 것을 제어해야 한다.
+* 그래서 다음과 같은 대안이 제시된다.
+* 1. Future를 이용한 f + g를 계산한 경우. [(코드)](../../main/java/part15/ApiExample/ExecutorServiceExample.java)
+  * 자식쓰레드의 흐름을 모두 엄마쓰레드가 정하지는 않는다 = 결과를 받는 것까지 직접 제어하지 않는다.
+  * 사실 f에만 Future를 적용할 수도 있지만, API 스타일을 통일하는 것이 좋고 병렬 하드웨어가 프로그램을 최대한 빠르게 실행하도록 하려면, (적절한 한도 내에서) 더 작고 더 많은 작업(task)으로 나누는 것이 유리하다.
+* 2. 콜백 스타일로 f + g를 계산한 경우. [(코드)](../../main/java/part15/ApiExample/CallbackStyleExample.java)
+  * f는 직접 
