@@ -26,4 +26,5 @@ JDK 8 이후의 자바 공부 + 다양 기능 활용
 * (14장은 현재 제외. 추후 필요시 작성)
 
 ## Part5 : 개선된 자바 동시성
-* [chapter15](./src/main/theory/chapter15.md)
+* [chapter15](./src/main/theory/chapter15.md) : CompletableFuture & 리액티브 프로그래밍 컨셉트 잡기
+* [chapter16](./src/main/theory/chapter16.md) : CompletableFuture : 조합 가능한 비동기 프로그래밍
