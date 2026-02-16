@@ -21,6 +21,75 @@ Java 8과 9는 이를 위해 두 가지 API를 도입했다:
 
 이 장에서는 CompletableFuture를 실전코드로 다뤄보며 연습한다고 생각.
 
-## Future의 도입과 한계
-**Future의 장점**
-1. 
+## Future 사용하기
+### Future의 도입
+Java는 미래의 어느 시점에 사용 가능해질 결과를 모델링하기 위해 Future를 도입
+* 시간이 오래 걸리는 작업을 Future 안에서 실행시키면:
+  * 호출한 스레드는 결과를 기다리지 않고 (비동기)
+  * 다른 유용한 작업을 계속 수행할 수 있다. 
+
+Future의 예시코드는 다음과 같다.
+```text
+// 쓰레드풀을 만든다.
+ExecutorService executor = Executors.newCachedThreadPool();
+
+// Future + executor + Callable을 이용
+Future<Double> future = executor.submit(
+    new Callable<Double>() {
+        public Double call() {
+            return doSomeLongComputation();
+        }
+    }
+);
+
+doSomethingElse();
+
+// 결과를 받아오기 위해 기다림.
+try {
+    Double result = future.get(1, TimeUnit.SECONDS);
+} catch (ExecutionException ee) {
+    // the computation threw an exception
+} catch (InterruptedException ie) {
+    // the current thread was interrupted while waiting
+} catch (TimeoutException te) {
+    // the timeout expired before the Future completion
+}
+```
+
+* 긴 작업은 ExecutorService가 제공하는 별도 스레드에서 실행된다. 
+* 메인 스레드는 그동안 다른 작업을 수행할 수 있다.
+* 더 이상 다른 작업을 할 수 없을 때 `future.get()`으로 결과를 가져온다.
+* `future.get()`
+  * 작업이 이미 끝났으면 즉시 반환
+  * 아니면 메인 스레드를 블로킹하여 기다림
+
+만약 그 긴 작업이 영원히 끝나지 않는다면?  
+-> 다음과 같이 대기시간을 둘 수 있다.
+```java
+future.get(timeout, TimeUnit.SECONDS);
+```
+그러나...
+
+### Future의 한계
+Future로는 “의존성 표현”이 어렵다.  
+예를 들어, 다음과 같은 것을 의미한다.  
+> 긴 계산이 끝나면 그 결과를 다른 긴 계산에 전달하고
+> 그 계산이 끝나면 또 다른 결과와 결합하라
+
+그래서 다음과 같은 기능들이 추가로 필요하다.
+1️⃣ 두 비동기 계산을 결합하기  
+* 서로 독립적인 경우
+* 두 번째가 첫 번째 결과에 의존하는 경우
+2️⃣ 여러 Future가 모두 끝날 때까지 기다리기  
+3️⃣ 여러 Future 중 가장 빠른 하나만 기다리기  
+* 같은 값을 다른 방식으로 계산할 때 유용
+4️⃣ Future를 프로그래밍적으로 완료시키기  
+* 비동기 작업 없이 직접 결과를 넣기  
+5️⃣ 완료에 반응하기
+* Future가 끝났을 때 통지를 받고 블로킹 없이 후속 작업을 수행하기
+
+## 예제코드
+****
+
+****
+
