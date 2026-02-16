@@ -1,39 +1,66 @@
 package part16.Example1;
 
 import lombok.Getter;
-import static part16.Example1.Util.*;
-
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 public class Shop {
-  @Getter
-  private final String name;
-  private final Random random;
 
-  public Shop(String name) {
-    this.name = name;
-    random = new Random(name.charAt(0) * name.charAt(1) * name.charAt(2));
-  }
+    @Getter
+    private final String name;
+    private final Random random;
 
-  public String getPrice(String product) {
-    double price = calculatePrice(product);
-    Discount.Code code = Discount.Code.values()[random.nextInt(Discount.Code.values().length)];
-    return name + ":" + price + ":" + code;
-  }
-
-  public double calculatePrice(String product) {
-    delay();
-    return format(random.nextDouble() * product.charAt(0) + product.charAt(1));
-  }
-
-  public static void delay() {
-    int delay = 1000;
-    //int delay = 500 + RANDOM.nextInt(2000);
-    try {
-      Thread.sleep(delay);
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e);
+    public Shop(String name) {
+        this.name = name;
+        random = new Random(name.charAt(0) * name.charAt(1) * name.charAt(2));
     }
-  }
 
+    // 가격 계산
+    private double calculatePrice(String product) {
+        delay();
+        return random.nextDouble() * product.charAt(0) + product.charAt(1);
+    }
+
+    // 일부러 delay를 시킨다.
+    public static void delay() {
+        int delay = 1000;
+        //int delay = 500 + RANDOM.nextInt(2000);
+        try {
+            Thread.sleep(delay);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /* 가격을 가지고 오는 메소드 */
+    // 1. 동기로 설계하기
+    public double getPrice(String product) {
+        return calculatePrice(product);
+    }
+
+    // 2. 비동기로 설계하기
+    public Future<Double> getPriceAsync(String product) {
+        CompletableFuture<Double> futurePrice = new CompletableFuture<>();
+        new Thread(() -> {
+            double price = calculatePrice(product);
+            futurePrice.complete(price);
+        }).start();
+        return futurePrice;
+    }
+
+    /* 비동기 형식 설계 (2) */
+    // Try-Catch로 오류처리를 추가
+    public Future<Double> getPriceAsync2(String product) {
+        CompletableFuture<Double> futurePrice = new CompletableFuture<>();
+        new Thread(() -> {
+            try {
+                double price = calculatePrice(product);
+                futurePrice.complete(price);
+            } catch (Exception ex) {
+                futurePrice.completeExceptionally(ex);
+            }
+        }).start();
+        return futurePrice;
+    }
 }

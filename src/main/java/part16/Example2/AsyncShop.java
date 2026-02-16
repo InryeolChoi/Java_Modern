@@ -1,7 +1,7 @@
-package part16.Example1;
+package part16.Example2;
 
-import static part16.Example1.Util.delay;
-import static part16.Example1.Util.format;
+import static part16.Example2.Util.delay;
+import static part16.Example2.Util.format;
 
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
