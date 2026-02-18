@@ -89,16 +89,55 @@ Future로는 “의존성 표현”이 어렵다.
 * Future가 끝났을 때 통지를 받고 블로킹 없이 후속 작업을 수행하기
 
 ## 예제코드 1 : 비동기로 설계해보기
-* 먼저, Future를 이용해 비동기 메서드를 만들어보자.
-* [Shop 클래스](../../main/java/part16/Example1/Shop.java)
-  * Shop 안의 물건 가격을 계산 후 반환하는 것이 목표
-  * 계산 시에 일부러 delay를 넣는다.
-  * 반환하는 메서드를 동기 -> 비동기 -> try/catch 순으로 추가
-* [ShopMain 클래스](../../main/java/part16/Example1/ShopMain.java)
-  * 비동기 설계 시, 함수의 반환 (invocation)과 값의 반환의 속도가 다름을 보여줌
-  * 또한 메인메서드가 다른 작업을 함으로써 주요 작업(=가격 반환)의 흐름이 자식메서드로 감을 보여줌.
-  * **기다리는 시간을 낭비하지 않는다**는 비동기의 장점을 보여줌.
+>> 먼저, Future를 이용해 가격을 가지고 오는 메서드롤 만들자.
 
-## 예제코드 2 : 비동기 + 논블로킹으로 만들기
+**[Shop 클래스](../../main/java/part16/Example1/Shop.java)**
+* Shop 안의 물건 가격을 계산 후 반환하는 것이 목표
+* 가격을 계산하는 메소드의 경우, 계산 시에 일부러 delay를 넣는다.
+  * 코드 상에서 `calculatePrice()` 하단에 `delay()`를 넣음
+
+* 반환하는 메서드를 다음과 같은 순으로 진화시킬 수 있다.
+1. getprice() : 동기로 설계하기
+2. getPriceAsync() : 비동기로 설계하기
+3. getPriceAsync2() : Try-Catch로 오류처리를 추가
+4. getPricesAsync3() : CompletableFuture.supplyAsync()로 단순화하기
+
+2번, 3번에서 비동기를 구현할 때는 직접 비동기 멀티쓰레딩을 다음과 같이 했어야 했다.  
+(이때 만들어지는 쓰레드는 1개)  
+```text
+new Thread(() -> {
+    try {
+        double price = calculatePrice(product);
+        futurePrice.complete(price);
+    } catch (Exception ex) {
+        futurePrice.completeExceptionally(ex);
+    }
+}).start();
+```
+
+이를 4번과 같이 단순화 할 수 있다.  
+(이때는 ForkJoinPool.commonPool()가 내부에서 돈다.)  
+```text
+CompletableFuture.supplyAsync(() -> calculatePrice(product));
+```
 
 
+
+**[ShopMain 클래스](../../main/java/part16/Example1/ShopMain.java)**
+* 비동기 설계 시, 함수의 반환 (invocation)과 값의 반환의 속도가 다름을 보여줌
+* 또한 메인메서드가 다른 작업을 함으로써 주요 작업(=가격 반환)의 흐름이 자식메서드로 감을 보여줌.
+* **기다리는 시간을 낭비하지 않는다**는 비동기의 장점을 보여줌.
+
+## 예제코드 2 : 비동기 + 논블로킹
+>> CompletableFuture를 이용해 가격을 한번에 찾는 메서드를 만들어보자.
+
+**[BestPriceFinder 클래스](../../main/java/part16/Example1/BestPriceFinder.java)**
+* 5가지의 Shop을 정의하고, 각 Shop별 가격을 나열하는 메서드를 만들면 된다.
+1. findPrices() : stream()으로 각 Shop별 가격을 찾기
+2. findPrices2() : parallelStream()으로 각 Shop별 가격을 찾기
+3. findPrices3() : CompletableFuture()
+
+각 메서드의 실행 결과는 다음과 같다.
+1. findPrices() : 5580 msec
+2. findPrices2() : 1180 msec
+3. 

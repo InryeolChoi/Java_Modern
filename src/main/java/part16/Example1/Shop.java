@@ -16,7 +16,8 @@ public class Shop {
         random = new Random(name.charAt(0) * name.charAt(1) * name.charAt(2));
     }
 
-    // 가격 계산
+    /* 가격 계산 */
+    // 가격을 실제로 계산
     private double calculatePrice(String product) {
         delay();
         return random.nextDouble() * product.charAt(0) + product.charAt(1);
@@ -49,8 +50,7 @@ public class Shop {
         return futurePrice;
     }
 
-    /* 비동기 형식 설계 (2) */
-    // Try-Catch로 오류처리를 추가
+    // 3. Try-Catch로 오류처리를 추가
     public Future<Double> getPriceAsync2(String product) {
         CompletableFuture<Double> futurePrice = new CompletableFuture<>();
         new Thread(() -> {
@@ -62,5 +62,10 @@ public class Shop {
             }
         }).start();
         return futurePrice;
+    }
+
+    // 4. CompletableFuture.supplyAsync()로 단순화하기
+    public Future<Double> getPriceAsync3(String product) {
+        return CompletableFuture.supplyAsync(() -> calculatePrice(product));
     }
 }

@@ -9,7 +9,7 @@ public class ShopMain {
 
         long start = System.nanoTime();
         System.out.println("자식 메서드의 분기 시작");
-        Future<Double> futurePrice = shop.getPriceAsync2("my favorite product");
+        Future<Double> futurePrice = shop.getPriceAsync3("my favorite product");
 
         long invocationTime = ((System.nanoTime() - start) / 1_000_000);
         System.out.println("자식 메서드의 반환(invocation)이 이뤄짐");

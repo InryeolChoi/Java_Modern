@@ -1,7 +1,7 @@
-package part16.Example2;
+package part16.Example3;
 
 import lombok.Getter;
-import static part16.Example2.Util.*;
+import static part16.Example3.Util.*;
 
 import java.util.Random;
 

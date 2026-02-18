@@ -1,6 +1,6 @@
-package part16.Example2;
+package part16.Example3;
 
-import static part16.Example2.Util.delay;
+import static part16.Example3.Util.delay;
 
 public class ExchangeService {
 
