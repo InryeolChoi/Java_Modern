@@ -8,7 +8,9 @@ public class BestPriceFinderMain {
         long start = System.nanoTime();
 
         // System.out.println(finder.findPrices("myPhone27S"));
-        System.out.println(finder.findPrices2("myPhone27S"));
+        // System.out.println(finder.findPrices2("myPhone27S"));
+        System.out.println(finder.findPrices3("myPhone27S"));
+
 
         long end = (System.nanoTime() - start) / 1_000_000;
         System.out.printf("물건 찾기 1 : %d msec%n", end);

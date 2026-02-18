@@ -2,6 +2,8 @@ package part16.Example2;
 
 import part16.Example1.Shop;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+
 import static java.util.stream.Collectors.toList;
 
 public class BestPriceFinder {
@@ -22,11 +24,28 @@ public class BestPriceFinder {
                 .collect(toList());
     };
 
-    // 2. parstream()으로 가격 찾기
+    // 2. parallelStream()으로 가격 찾기
     public List<String> findPrices2(String product) {
         return shops.parallelStream()
-                .map(shop -> String.format("%s price is %.2f", shop.getName(), shop.getPrice(product)))
+                .map(shop ->
+                        String.format("%s price is %.2f", shop.getName(), shop.getPrice(product)))
                 .collect(toList());
     };
 
+    // 3. CompletableFuture.supplyAsync()로 이용하기
+    public List<String> findPrices3(String product) {
+        List<CompletableFuture<String>> prices = shops
+                .parallelStream()
+                .map(shop -> CompletableFuture
+                        .supplyAsync(() -> String.format(
+                                "%s price is %.2f",
+                                shop.getName(),
+                                shop.getPrice(product)
+                        ))
+                ).collect(toList());
+
+        return prices.stream()
+                .map(CompletableFuture::join)
+                .collect(toList());
+    };
 }

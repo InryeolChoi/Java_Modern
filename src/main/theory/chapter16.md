@@ -121,8 +121,6 @@ new Thread(() -> {
 CompletableFuture.supplyAsync(() -> calculatePrice(product));
 ```
 
-
-
 **[ShopMain 클래스](../../main/java/part16/Example1/ShopMain.java)**
 * 비동기 설계 시, 함수의 반환 (invocation)과 값의 반환의 속도가 다름을 보여줌
 * 또한 메인메서드가 다른 작업을 함으로써 주요 작업(=가격 반환)의 흐름이 자식메서드로 감을 보여줌.
@@ -135,9 +133,12 @@ CompletableFuture.supplyAsync(() -> calculatePrice(product));
 * 5가지의 Shop을 정의하고, 각 Shop별 가격을 나열하는 메서드를 만들면 된다.
 1. findPrices() : stream()으로 각 Shop별 가격을 찾기
 2. findPrices2() : parallelStream()으로 각 Shop별 가격을 찾기
-3. findPrices3() : CompletableFuture()
+3. findPrices3() : CompletableFuture()으로 각 Shop별 가격을 찾기
 
 각 메서드의 실행 결과는 다음과 같다.
 1. findPrices() : 5580 msec
 2. findPrices2() : 1180 msec
-3. 
+3. findPrices3() : 1030 msec
+
+parallelStream과 CompletableFuture이 큰 차이가 나지 않음.
+
