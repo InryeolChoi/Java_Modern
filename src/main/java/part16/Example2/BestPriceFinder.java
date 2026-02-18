@@ -3,6 +3,8 @@ package part16.Example2;
 import part16.Example1.Shop;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -14,6 +16,14 @@ public class BestPriceFinder {
             new Shop("MyFavoriteShop"),
             new Shop("BuyItAll"),
             new Shop("ShopEasy")
+    );
+
+    private final Executor executor = Executors.newFixedThreadPool(
+        shops.size(), (Runnable r) -> {
+            Thread t = new Thread(r);
+            t.setDaemon(true);
+            return t;
+        }
     );
 
     /* 가격을 찾는 메서드 */
@@ -36,12 +46,24 @@ public class BestPriceFinder {
     public List<String> findPrices3(String product) {
         List<CompletableFuture<String>> prices = shops
                 .parallelStream()
-                .map(shop -> CompletableFuture
-                        .supplyAsync(() -> String.format(
-                                "%s price is %.2f",
-                                shop.getName(),
-                                shop.getPrice(product)
-                        ))
+                .map(shop ->
+                    CompletableFuture.supplyAsync(() ->
+                        String.format("%s price is %.2f", shop.getName(), shop.getPrice(product))
+                    )
+                ).collect(toList());
+
+        return prices.stream()
+                .map(CompletableFuture::join)
+                .collect(toList());
+    };
+
+    public List<String> findPrices4(String product) {
+        List<CompletableFuture<String>> prices = shops
+                .parallelStream()
+                .map(shop ->
+                    CompletableFuture.supplyAsync(() ->
+                        String.format("%s price is %.2f", shop.getName(), shop.getPrice(product)),
+                        executor)
                 ).collect(toList());
 
         return prices.stream()

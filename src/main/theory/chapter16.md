@@ -129,16 +129,48 @@ CompletableFuture.supplyAsync(() -> calculatePrice(product));
 ## 예제코드 2 : 비동기 + 논블로킹
 >> CompletableFuture를 이용해 가격을 한번에 찾는 메서드를 만들어보자.
 
-**[BestPriceFinder 클래스](../../main/java/part16/Example1/BestPriceFinder.java)**
-* 5가지의 Shop을 정의하고, 각 Shop별 가격을 나열하는 메서드를 만들면 된다.
+**[BestPriceFinder 클래스](../../main/java/part16/Example2/BestPriceFinder.java)**
+* 5가지의 Shop을 정의하고, ¬각 Shop별 가격을 나열하는 메서드를 만들면 된다.
 1. findPrices() : stream()으로 각 Shop별 가격을 찾기
 2. findPrices2() : parallelStream()으로 각 Shop별 가격을 찾기
 3. findPrices3() : CompletableFuture()으로 각 Shop별 가격을 찾기
 
-각 메서드의 실행 결과는 다음과 같다.
-1. findPrices() : 5580 msec
-2. findPrices2() : 1180 msec
-3. findPrices3() : 1030 msec
+**[BestPriceFinderMain 클래스](../../main/java/part16/Example2/BestPriceFinderMain.java)**
+또한 이에 맞는 메인 메소드 역시 만들어준다.  
+이때, 각 메서드의 실행 결과는 다음과 같다.  
+1. findPrices() : 5057 msec
+2. findPrices2() : 1008 msec
+3. findPrices3() : 1009 msec
 
-parallelStream과 CompletableFuture이 큰 차이가 나지 않음.
+> 각 메서드별 비교는 executor()라는 메소드를 따로 만들어서 진행.  
 
+** 사실 parallelStream과 CompletableFuture의 차이가 별로 없다.
+* 그렇다면, 왜 우리는 CompletableFuture를 쓰는 걸까?
+* 이에 대한 해답이 아래에 있다.
+
+## 예제코드 3 : 작업 파이프라인 만들어보기
+> 하나의 작업이 아닌, 여러 개의 작업이 조합되는 경우에는 어떻게 해야 할까?
+
+
+단순히 가격을 조회하는 것에 더해 할인 등 기능을 넣어보자.  
+먼저 Shop 클래스의 내용도 바꾸고, Util도 추가한다.  
+**[Shop 클래스](../../main/java/part16/Example3/Shop.java)**
+- Shop의 getPrice()의 경우, 다시 동기로 바뀌였는데 이는 일부러 느리게 다시 만들어 놓은 것.
+- 여러 단계의 원격 호출이 있는 동기 파이프라인를 만들어, 비동기 구조의 필요성을 체감시키는 것이 목표
+
+**[Util 클래스](../../main/java/part16/Example3/Util.java)**
+
+
+* 인제 Discount와 Quote 클래스를 추가해보자.  
+**[Discount 클래스](../../main/java/part16/Example3/Discount.java)**
+**[Quote 클래스](../../main/java/part16/Example3/Quote.java)**
+
+
+
+
+
+**문제점 : parallelStream과 CompletableFuture이 큰 차이가 나지 않음.**
+* 해결책 : 커스텀한 Executor를 추가한다 = 쓰레드를 늘린다.
+* 이렇게 만든 findPrices4()의 수행시간은 1008 msec
+* 그래도 parallelStream과 별로 차이가 안나는데, 왜 그렇다면 커스텀한 Executor를 추가한걸까?
+* 그 이유는 아래에서 나온다.

@@ -1,24 +1,13 @@
 package part16.Example3;
 
-import java.util.List;
-import java.util.function.Supplier;
-
 public class BestPriceFinderMain {
+    private static BestPriceFinder finder = new BestPriceFinder();
 
-  private static BestPriceFinder bestPriceFinder = new BestPriceFinder();
+    public static void main(String[] args) {
+        long start = System.nanoTime();
 
-  public static void main(String[] args) {
-    execute("sequential", () -> bestPriceFinder.findPricesSequential("myPhone27S"));
-    execute("parallel", () -> bestPriceFinder.findPricesParallel("myPhone27S"));
-    execute("composed CompletableFuture", () -> bestPriceFinder.findPricesFuture("myPhone27S"));
-    bestPriceFinder.printPricesStream("myPhone27S");
-  }
+        long end = (System.nanoTime() - start) / 1_000_000;
+        System.out.printf("물건 찾기 1 : %d msec%n", end);
 
-  private static void execute(String msg, Supplier<List<String>> s) {
-    long start = System.nanoTime();
-    System.out.println(s.get());
-    long duration = (System.nanoTime() - start) / 1_000_000;
-    System.out.println(msg + " done in " + duration + " msecs");
-  }
-
+    }
 }
