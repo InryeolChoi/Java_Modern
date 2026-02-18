@@ -129,43 +129,58 @@ CompletableFuture.supplyAsync(() -> calculatePrice(product));
 ## 예제코드 2 : 비동기 + 논블로킹
 >> CompletableFuture를 이용해 가격을 한번에 찾는 메서드를 만들어보자.
 
+### 첫 번째 예시
 **[BestPriceFinder 클래스](../../main/java/part16/Example2/BestPriceFinder.java)**
-* 5가지의 Shop을 정의하고, ¬각 Shop별 가격을 나열하는 메서드를 만들면 된다.
+5가지의 Shop을 정의하고 각 Shop별 가격을 나열하는 메서드를 만들면 된다.  
 1. findPrices() : stream()으로 각 Shop별 가격을 찾기
 2. findPrices2() : parallelStream()으로 각 Shop별 가격을 찾기
 3. findPrices3() : CompletableFuture()으로 각 Shop별 가격을 찾기
 
-**[BestPriceFinderMain 클래스](../../main/java/part16/Example2/BestPriceFinderMain.java)**
-또한 이에 맞는 메인 메소드 역시 만들어준다.  
+**[Main 클래스](../../main/java/part16/Example2/Main.java)**
+이에 맞는 메인 메소드 역시 만들어준다.  
 이때, 각 메서드의 실행 결과는 다음과 같다.  
 1. findPrices() : 5057 msec
 2. findPrices2() : 1008 msec
 3. findPrices3() : 1009 msec
-
 > 각 메서드별 비교는 executor()라는 메소드를 따로 만들어서 진행.  
 
-** 사실 parallelStream과 CompletableFuture의 차이가 별로 없다.
+### 두 번째 예시
+사실 parallelStream과 CompletableFuture의 차이가 별로 없다.  
 * 그렇다면, 왜 우리는 CompletableFuture를 쓰는 걸까?
-* 이에 대한 해답이 아래에 있다.
+
+**[BestPriceFinder 클래스](../../main/java/part16/Example2/BestPriceFinder.java)**
+상점의 갯수를 9개로 늘려보고, 각 Shop별 가격을 나열하는 메서드를 만들면 된다.
+1. findPrices() : stream()으로 각 Shop별 가격을 찾기
+2. findPrices2() : parallelStream()으로 각 Shop별 가격을 찾기
+3. findPrices3() : CompletableFuture()으로 각 Shop별 가격을 찾기
+4. findPrices4() : CompletableFuture() + Executor로 각 Shop별 가격을 찾기
+- Executor를 이용해서 쓰레드 갯수를 조절 가능.
+
+**[Main2 클래스](../../main/java/part16/Example2/Main2.java)**
+9가지의 Shop을 정의하고, 또한 이에 맞는 메인 메소드 역시 만들어준다.
+
+이때, 각 메서드의 실행 결과는 다음과 같다.
+1. findPrices() : 9065 msec
+2. findPrices2() : 2008 msec
+3. findPrices3() : 2009 msec
+4. findPrices4() : 1007 msec
+
 
 ## 예제코드 3 : 작업 파이프라인 만들어보기
 > 하나의 작업이 아닌, 여러 개의 작업이 조합되는 경우에는 어떻게 해야 할까?
 
-
 단순히 가격을 조회하는 것에 더해 할인 등 기능을 넣어보자.  
 먼저 Shop 클래스의 내용도 바꾸고, Util도 추가한다.  
 **[Shop 클래스](../../main/java/part16/Example3/Shop.java)**
+**[Util 클래스](../../main/java/part16/Example3/Util.java)**
 - Shop의 getPrice()의 경우, 다시 동기로 바뀌였는데 이는 일부러 느리게 다시 만들어 놓은 것.
 - 여러 단계의 원격 호출이 있는 동기 파이프라인를 만들어, 비동기 구조의 필요성을 체감시키는 것이 목표
 
-**[Util 클래스](../../main/java/part16/Example3/Util.java)**
-
-
-* 인제 Discount와 Quote 클래스를 추가해보자.  
+인제 Discount와 Quote 클래스를 추가해보자.  
 **[Discount 클래스](../../main/java/part16/Example3/Discount.java)**
 **[Quote 클래스](../../main/java/part16/Example3/Quote.java)**
 
-
+또한 
 
 
 

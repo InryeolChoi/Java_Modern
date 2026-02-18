@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import static part16.Example3.Util.format;
 
 public class Discount {
-    @AllArgsConstructor
+
     public enum Code {
         NONE(0),
         SILVER(5),
@@ -14,6 +14,10 @@ public class Discount {
         DIAMOND(20);
 
         private final int percentage;
+
+        Code(int percentage) {
+            this.percentage = percentage;
+        }
     };
 
     private static Util util = new Util();

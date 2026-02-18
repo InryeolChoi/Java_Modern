@@ -1,21 +1,25 @@
 package part16.Example2;
 
 import part16.Example1.Shop;
-import java.util.*;
+
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-
 import static java.util.stream.Collectors.toList;
 
-public class BestPriceFinder {
-    // 5가지의 Shop을 정의한다.
+public class BestPriceFinder2 {
     private static final List<Shop> shops = Arrays.asList(
             new Shop("BestPrice"),
             new Shop("LetsSaveBig"),
             new Shop("MyFavoriteShop"),
             new Shop("BuyItAll"),
-            new Shop("ShopEasy")
+            new Shop("ShopEasy"),
+            new Shop("HomePlus"),
+            new Shop("Costco"),
+            new Shop("e-mart"),
+            new Shop("Coupang")
     );
 
     /* 가격을 찾는 메서드 */
@@ -39,9 +43,32 @@ public class BestPriceFinder {
         List<CompletableFuture<String>> prices = shops
                 .parallelStream()
                 .map(shop ->
-                    CompletableFuture.supplyAsync(() ->
-                        String.format("%s price is %.2f", shop.getName(), shop.getPrice(product))
-                    )
+                        CompletableFuture.supplyAsync(() ->
+                                String.format("%s price is %.2f", shop.getName(), shop.getPrice(product))
+                        )
+                ).collect(toList());
+
+        return prices.stream()
+                .map(CompletableFuture::join)
+                .collect(toList());
+    };
+
+    // 4. 자체적인 쓰레드풀 추가 : executor
+    private final Executor executor = Executors.newFixedThreadPool(
+            shops.size(), (Runnable r) -> {
+                Thread t = new Thread(r);
+                t.setDaemon(true);
+                return t;
+            }
+    );
+
+    public List<String> findPrices4(String product) {
+        List<CompletableFuture<String>> prices = shops
+                .stream()
+                .map(shop ->
+                        CompletableFuture.supplyAsync(() ->
+                                        String.format("%s price is %.2f", shop.getName(), shop.getPrice(product)),
+                                executor)
                 ).collect(toList());
 
         return prices.stream()

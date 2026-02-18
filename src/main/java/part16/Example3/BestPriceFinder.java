@@ -1,8 +1,6 @@
 package part16.Example3;
 
-import part16.Example1.Shop;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 
 import static java.util.stream.Collectors.toList;
 
@@ -17,13 +15,22 @@ public class BestPriceFinder {
     );
 
     /* 가격을 찾는 메서드 */
-//    public List<String> findPrice4(String product) {
-//        return shops.stream()
-//                .map(shop -> shop.getPrice(product))
-//                .map(Quote::parse)
-//                .map(Discount::applyDiscount)
-//                .collect(toList());
-//    }
+    // 단순 stream()
+    public List<String> findPriceWithService1(String product) {
+        return shops.stream()
+                .map(shop -> shop.getStringPrice(product))
+                .map(Quote::parse)
+                .map(Discount::applyDiscount)
+                .collect(toList());
+    }
 
+    // parallelStream
+    public List<String> findPriceWithService2(String product) {
+        return shops.parallelStream()
+                .map(shop -> shop.getStringPrice(product))
+                .map(Quote::parse)
+                .map(Discount::applyDiscount)
+                .collect(toList());
+    }
 
 }

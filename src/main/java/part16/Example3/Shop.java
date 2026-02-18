@@ -1,9 +1,7 @@
 package part16.Example3;
 
 import lombok.Getter;
-
 import java.util.Random;
-import java.util.concurrent.CompletableFuture;
 
 public class Shop {
 
@@ -21,13 +19,15 @@ public class Shop {
 
     /* 가격 계산 */
     // 가격을 실제로 계산
-    private String calculatePrice(String product) {
+    private double calculatePrice(String product) {
         util.delay();
         return random.nextDouble() * product.charAt(0) + product.charAt(1);
     }
 
     /* 가격을 가지고 오는 메소드 */
-    public String getPrice(String product) {
-
+    public String getStringPrice(String product) {
+        double price = calculatePrice(product);
+        Discount.Code code = Discount.Code.values()[random.nextInt(Discount.Code.values().length)];
+        return name + ":" + price + ":" + code;
     }
 }
