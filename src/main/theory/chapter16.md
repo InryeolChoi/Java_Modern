@@ -165,9 +165,18 @@ CompletableFuture.supplyAsync(() -> calculatePrice(product));
 3. findPrices3() : 2009 msec
 4. findPrices4() : 1007 msec
 
+왜? 우리가 하는 작업 = 가격 조회 = I/O 작업
+* parallelStream은 컬렉션을 CPU 코어 수만큼 나눠서 계산 
+* 즉, 연산이 CPU-bound일 때 최고 효율
+* 그런데 우리의 작업은 I/O bound.
+* 따라서 CompletableFuture + Executor가 더 빠르다.
+
+**즉 parallelStream은 CPU가 많이 필요한 곳에 어울림.  
+또한 CompletableFuture는 I/O가 많은 작업에 어울림.**
+
 
 ## 예제코드 3 : 작업 파이프라인 만들어보기
-> 하나의 작업이 아닌, 여러 개의 작업이 조합되는 경우에는 어떻게 해야 할까?
+> 이번에는 하나의 작업이 아닌, 여러 개의 작업이 조합되는 경우를 생각해보자.
 
 단순히 가격을 조회하는 것에 더해 할인 등 기능을 넣어보자.  
 먼저 Shop 클래스의 내용도 바꾸고, Util도 추가한다.  
