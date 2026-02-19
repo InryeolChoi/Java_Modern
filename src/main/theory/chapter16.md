@@ -174,27 +174,45 @@ CompletableFuture.supplyAsync(() -> calculatePrice(product));
 **즉 parallelStream은 CPU가 많이 필요한 곳에 어울림.  
 또한 CompletableFuture는 I/O가 많은 작업에 어울림.**
 
-
 ## 예제코드 3 : 작업 파이프라인 만들어보기
 > 이번에는 하나의 작업이 아닌, 여러 개의 작업이 조합되는 경우를 생각해보자.
 
 단순히 가격을 조회하는 것에 더해 할인 등 기능을 넣어보자.  
-먼저 Shop 클래스의 내용도 바꾸고, Util도 추가한다.  
+1. Shop 클래스의 내용도 바꾸고, Util도 추가한다.  
 **[Shop 클래스](../../main/java/part16/Example3/Shop.java)**
 **[Util 클래스](../../main/java/part16/Example3/Util.java)**
 - Shop의 getPrice()의 경우, 다시 동기로 바뀌였는데 이는 일부러 느리게 다시 만들어 놓은 것.
 - 여러 단계의 원격 호출이 있는 동기 파이프라인를 만들어, 비동기 구조의 필요성을 체감시키는 것이 목표
 
-인제 Discount와 Quote 클래스를 추가해보자.  
+2. Discount와 Quote 클래스를 추가해보자.  
 **[Discount 클래스](../../main/java/part16/Example3/Discount.java)**
 **[Quote 클래스](../../main/java/part16/Example3/Quote.java)**
 
-또한 
+3. BestPriceFinder를 수정한다. 
+* findPriceWithService1 : 단순 stream()으로 이뤄진 
+* findPriceWithService2 : completablefuture() + executor
+* findPriceWithService3 : 가격 찾기 + 환전을 future()만 가지고 구현
+```text
+findPriceWithService3의 구현과정
+1. 쓰레드풀 구현 : `ExecutorService executor = Executors.newCachedThreadPool();`
+newCachedThreadPool()은 I/O 성격에 적합.
+
+2. 첫 번째 작업인 futureRate 구현. 환율을 가지고 옴.
+3. 두 번째 작업인 futurePriceInUSD. 가지고 온 환율을 이용해 EUR
+
+```
 
 
 
-**문제점 : parallelStream과 CompletableFuture이 큰 차이가 나지 않음.**
-* 해결책 : 커스텀한 Executor를 추가한다 = 쓰레드를 늘린다.
-* 이렇게 만든 findPrices4()의 수행시간은 1008 msec
-* 그래도 parallelStream과 별로 차이가 안나는데, 왜 그렇다면 커스텀한 Executor를 추가한걸까?
-* 그 이유는 아래에서 나온다.
+
+**여기서 잠깐**
+>> completablefuture의 여러 메서드를 한번 정리하고 넘어가자
+
+* thenapply() : 하나의 CompletableFuture<T>가 끝났을 때 그 결과 T를 받아서 **같은 쓰레드에서** U로 변환하는 함수 적용
+* thenApplyAsync() : 하나의 CompletableFuture<T>가 끝났을 때 그 결과 T를 받아서 **다른 쓰레드에서** U로 변환하는 함수 적용
+```text
+CompletableFuture<T>
+    .thenApply(Function<T, U>)
+```
+* thencombine() : 두 작업이 모두 완료되면 두 결과를 받아서 합침 (병렬적)
+

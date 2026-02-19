@@ -10,14 +10,14 @@ public class Util {
     private static final DecimalFormat formatter = new DecimalFormat("#.##", new DecimalFormatSymbols(Locale.US));
 
     public static void delay() {
-        int delay = 1000;
-        //int delay = 500 + RANDOM.nextInt(2000);
+        int delay = 500 + RANDOM.nextInt(2000);
         try {
             Thread.sleep(delay);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
+
 
     public static double format(double number) {
         synchronized (formatter) {

@@ -30,4 +30,9 @@ public class Shop {
         Discount.Code code = Discount.Code.values()[random.nextInt(Discount.Code.values().length)];
         return name + ":" + price + ":" + code;
     }
+
+    public double getDoublePrice(String product) {
+        return calculatePrice(product);
+    }
+
 }

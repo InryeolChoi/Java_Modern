@@ -17,6 +17,8 @@ public class Main2 {
         execute("findPrices4 : ", () -> finder2.findPrices4("myPhone27S"));
     }
 
+
+
     private static void execute(String msg, Supplier<List<String>> s) {
         long start = System.nanoTime();
         System.out.println(s.get());

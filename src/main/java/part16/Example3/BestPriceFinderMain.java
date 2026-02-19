@@ -9,6 +9,7 @@ public class BestPriceFinderMain {
     public static void main(String[] args) {
         execute("findPriceWithService1 : ", () -> service.findPriceWithService1("myPhone27S"));
         execute("findPriceWithService2 : ", () -> service.findPriceWithService2("myPhone27S"));
+        execute("findPriceWithService3 : ", () -> service.findPriceWithService3("myPhone27S"));
     }
 
     private static void execute (String msg, Supplier<List<String>> s){
