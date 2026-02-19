@@ -126,7 +126,7 @@ CompletableFuture.supplyAsync(() -> calculatePrice(product));
 * 또한 메인메서드가 다른 작업을 함으로써 주요 작업(=가격 반환)의 흐름이 자식메서드로 감을 보여줌.
 * **기다리는 시간을 낭비하지 않는다**는 비동기의 장점을 보여줌.
 
-## 예제코드 2 : 비동기 + 논블로킹
+## 예제코드 2 : CompletableFuture
 >> CompletableFuture를 이용해 가격을 한번에 찾는 메서드를 만들어보자.
 
 ### 첫 번째 예시
@@ -193,26 +193,58 @@ CompletableFuture.supplyAsync(() -> calculatePrice(product));
 * findPriceWithService2 : completablefuture() + executor
 * findPriceWithService3 : 가격 찾기 + 환전을 future()만 가지고 구현
 ```text
-findPriceWithService3의 구현과정
-1. 쓰레드풀 구현 : `ExecutorService executor = Executors.newCachedThreadPool();`
-newCachedThreadPool()은 I/O 성격에 적합.
+findPriceWithService3의 구현과정  
+1. 쓰레드풀 구현 : `ExecutorService executor = Executors.newCachedThreadPool();`  
+newCachedThreadPool()은 I/O 성격에 적합.  
 
-2. 첫 번째 작업인 futureRate 구현. 환율을 가지고 옴.
-3. 두 번째 작업인 futurePriceInUSD. 가지고 온 환율을 이용해 EUR
+2. 첫 번째 작업인 futureRate 구현. 환율을 가지고 올 부분  
+3. 두 번째 작업인 futurePriceInUSD. 가지고 온 환율을 이용해 EUR -> USD로 변환할 부분  
+4. 이렇게 구현된 두 future를 add()로 합치고, 이걸 다시 가격으로 변환  
 
+이 방식의 문제  
+(1) 코드 자체가 상당히 복잡하다.
+(2) 쓰레드가 1개인 경우, 데드락이 발생한다.
+- 왜? futurePriceInUSD가 먼저 실행될 경우, futureRate.get()에서 막힌다. 
+- 실행되지도 않은 futureRate를 계속 잡고 있기 때문!
+- 단 여기서는 쓰레드를 CachedThreadPool을 이용해 많이 늘려놓은 상황이라 오히려 속도가 빠름
+
+그래서 Completablefuture를 도입함.
 ```
 
+* findPriceWithService4 : 가격 찾기 + 환전을 completablefuture() + executor로 구현
+```text
+findPriceWithService3의 구현과정  
+1. 첫 번째 작업을 수행 : 환율 가지고 오기
+2. `.thenCombine()`를 이용해 두 번째 작업 : EUR -> USD
+3. `.thenApply()`를 이용해 환율(Double) -> String
+4. 받은 데이터를 가격으로 변환
+```
 
+* findPriceWithService5
+- 스트림 + CompletableFuture로 만들기
+- .map()을 이용해 리스트로 변환
 
+* 단, 실제 결과는 findPriceWithService3가 더 빠르다.
+* CachedThreadPool을 사용해서 블로킹 작업에서 병목이 생기지 않기 때문
+
+## 예제코드 4 : 추가적인 기능들
+**[BestPriceFinder 클래스](../../main/java/part16/Example4/BestPriceFinder.java)**
+**[BestPriceFinderMain 클래스](../../main/java/part16/Example4/BestPriceFinderMain.java)**
+1. findPricesWithAllOf() : 모든 상점의 가격을 모아서 반환
+2. findFastestPrice() : 가장 빠르게 정보가 나온 상점 가격을 반환
 
 **여기서 잠깐**
 >> completablefuture의 여러 메서드를 한번 정리하고 넘어가자
 
+* **조합 계열**
 * thenapply() : 하나의 CompletableFuture<T>가 끝났을 때 그 결과 T를 받아서 **같은 쓰레드에서** U로 변환하는 함수 적용
 * thenApplyAsync() : 하나의 CompletableFuture<T>가 끝났을 때 그 결과 T를 받아서 **다른 쓰레드에서** U로 변환하는 함수 적용
-```text
-CompletableFuture<T>
-    .thenApply(Function<T, U>)
-```
 * thencombine() : 두 작업이 모두 완료되면 두 결과를 받아서 합침 (병렬적)
 
+* **에러처리 계열**
+* orTimeout() : 주어진 시간 안에 완료되지 않으면 TimeoutException을 발생시켜서 예외로 완료시킨다
+* completeOnTimeout() : 주어진 시간 안에 완료되지 않으면 기본값으로 정상 완료시킨다
+
+* **조합 계열**
+* allOf() : 여러 CompletableFuture가 전부 끝날 때까지 기다리는 조합기
+* anyOf() : 여러 CompletableFuture 중 하나라도 먼저 끝나는 것을 반환

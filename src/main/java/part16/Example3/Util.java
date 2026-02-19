@@ -7,10 +7,9 @@ import java.util.Random;
 
 public class Util {
     private static final Random RANDOM = new Random(0);
-    private static final DecimalFormat formatter = new DecimalFormat("#.##", new DecimalFormatSymbols(Locale.US));
 
     public static void delay() {
-        int delay = 500 + RANDOM.nextInt(2000);
+        int delay = 500;
         try {
             Thread.sleep(delay);
         } catch (InterruptedException e) {
@@ -18,11 +17,11 @@ public class Util {
         }
     }
 
+    private static final ThreadLocal<DecimalFormat> formatter =
+            ThreadLocal.withInitial(() -> new DecimalFormat("#.##"));
 
     public static double format(double number) {
-        synchronized (formatter) {
-            return new Double(formatter.format(number));
-        }
+        return Double.parseDouble(formatter.get().format(number));
     }
 
 }

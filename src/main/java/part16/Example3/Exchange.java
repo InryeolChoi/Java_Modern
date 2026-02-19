@@ -1,6 +1,6 @@
 package part16.Example3;
 
-public class ExchangeService {
+public class Exchange {
     public static final double DEFAULT_RATE = 1.35;
 
     private static Util util = new Util();
