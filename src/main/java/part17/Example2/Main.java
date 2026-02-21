@@ -1,4 +1,4 @@
-package part17;
+package part17.Example2;
 
 import java.util.concurrent.Flow;
 

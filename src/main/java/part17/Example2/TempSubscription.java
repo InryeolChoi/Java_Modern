@@ -1,9 +1,9 @@
-package part17;
+package part17.Example2;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 
-import java.util.concurrent.Flow.*;
+import java.util.concurrent.Flow.Subscriber;
+import java.util.concurrent.Flow.Subscription;
 
 @AllArgsConstructor
 public class TempSubscription implements Subscription {

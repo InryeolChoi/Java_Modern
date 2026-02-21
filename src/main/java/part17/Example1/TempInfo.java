@@ -1,9 +1,11 @@
-package part17;
+package part17.Example1;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @AllArgsConstructor
 @Getter

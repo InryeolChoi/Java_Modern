@@ -91,7 +91,7 @@ public interface Subscription {
     void request(long n);
     void cancel();
 }
-```
+```~~~~~~
 
 4️⃣ Flow.Processor<T,R> : 중간 변환자
 스트림 파이프라인의 중간 노드
@@ -101,28 +101,22 @@ public interface Processor<T,R>
 ```
 
 따라서 전체 구조는 다음과 같음.
-```
-Publisher
-↓
-Subscriber (Processor 가능)
-↓
-Subscription (request(n))
-```
 
 1️⃣ Subscriber가 Publisher에 subscribe()  
 2️⃣ Publisher가 onSubscribe() 호출하면서 Subscription 전달  
 3️⃣ Subscriber가 request(n) 호출
-4️⃣ Publisher가 onNext() n번 호출  
+4️⃣ Publisher가 onNext() n번 호출
 5️⃣ 완료되면 onComplete()  
 
 ## 실제 어플리케이션 만들어보기
 1️⃣[TempInfo](../../main/java/part17/TempInfo.java)
-* 원격 온도계를 흉내낸다.
+2️⃣[TempSubscription](../../main/java/part17/TempSubscription.java)
+3️⃣[TempSubscriber](../../main/java/part17/TempSubscriber.java)
+4️⃣[Main](../../main/java/part17/Main.java)
 
-2️⃣[TempSubscriber](../../main/java/part17/TempSubscriber.java)
-* 
-
-[Main](../../main/java/part17/Main.java)
-
-[TempSubscription](../../main/java/part17/TempSubscription.java)
-
+1. Main에서 TempSubscriber를 구독자로 추가
+2. TempSubscriber.onSubscribe가 구독을 추가하고 첫 번째 요청을 보냄
+3. Main의 getTemp 작동해 응답 날림 -> TempSubscriber의 onNext 작동
+4. TempSubscriber의 onNext는 -> Subscription에 메시지를 날림
+5. Subscription은 TempInfo에서 가져온 정보를 TempSubscriber.onComplete()로 날림.
+6. 이 과정이 반복.
