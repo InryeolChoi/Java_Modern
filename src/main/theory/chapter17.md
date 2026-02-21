@@ -41,6 +41,11 @@
 어떻게 참조하지 않고 데이터를 주고 받을 것인가? 메시지로!
 3. 위치 투명성 : 서비스가 어디 있는지 몰라도 됨
 
+### 실제 코딩하는 방법은?
+1. Java 9부터 지원하는 Flow 클래스 쓰기
+2. 라이브러리 형태로 지원하는 RxJava 쓰기
+
+
 ## 리액티브 스트림과 Flow api
 * 스트림 : 시간에 따라 발생하는 이벤트의 흐름
 * 스트림을 다루려면 다음 4가지가 꼭 필요함.
@@ -94,4 +99,30 @@ public interface Subscription {
 public interface Processor<T,R>
     extends Subscriber<T>, Publisher<R>
 ```
+
+따라서 전체 구조는 다음과 같음.
+```
+Publisher
+↓
+Subscriber (Processor 가능)
+↓
+Subscription (request(n))
+```
+
+1️⃣ Subscriber가 Publisher에 subscribe()  
+2️⃣ Publisher가 onSubscribe() 호출하면서 Subscription 전달  
+3️⃣ Subscriber가 request(n) 호출
+4️⃣ Publisher가 onNext() n번 호출  
+5️⃣ 완료되면 onComplete()  
+
+## 실제 어플리케이션 만들어보기
+1️⃣[TempInfo](../../main/java/part17/TempInfo.java)
+* 원격 온도계를 흉내낸다.
+
+2️⃣[TempSubscriber](../../main/java/part17/TempSubscriber.java)
+* 
+
+[Main](../../main/java/part17/Main.java)
+
+[TempSubscription](../../main/java/part17/TempSubscription.java)
 
