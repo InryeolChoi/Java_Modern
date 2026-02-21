@@ -40,3 +40,58 @@
 2. 비결합 : 서로를 직접 참조하지 않음.
 어떻게 참조하지 않고 데이터를 주고 받을 것인가? 메시지로!
 3. 위치 투명성 : 서비스가 어디 있는지 몰라도 됨
+
+## 리액티브 스트림과 Flow api
+* 스트림 : 시간에 따라 발생하는 이벤트의 흐름
+* 스트림을 다루려면 다음 4가지가 꼭 필요함.
+1. 비동기
+2. 논블로킹
+3. Backpressure 지원
+4. 데이터 흐름 중심
+
+## Flow 클래스 소개
+>> Reactive Streams 표준을 JDK 안으로 가져옴
+
+📦 Flow는 클래스가 아니라 “인터페이스 묶음”
+```text
+Flow
+ ├─ Publisher<T>
+ ├─ Subscriber<T>
+ ├─ Subscription
+ └─ Processor<T,R>
+```
+
+1️⃣ Flow.Publisher : 데이터를 발행
+```text
+public interface Publisher<T> {
+    void subscribe(Subscriber<? super T> subscriber);
+}
+```
+
+2️⃣ Flow.Subscriber : 데이터를 구독
+해당 인터페이스는 콜백 기반 구조임.
+```text
+public interface Subscriber<T> {
+    void onSubscribe(Subscription subscription);
+    void onNext(T item);
+    void onError(Throwable throwable);
+    void onComplete();
+}
+```
+
+3️⃣ Flow.Subscription : Subscriber가 “얼마나 받을지” 요청함.
+이게 바로 backpressure.
+```text
+public interface Subscription {
+    void request(long n);
+    void cancel();
+}
+```
+
+4️⃣ Flow.Processor<T,R> : 중간 변환자
+스트림 파이프라인의 중간 노드
+```text
+public interface Processor<T,R>
+    extends Subscriber<T>, Publisher<R>
+```
+
