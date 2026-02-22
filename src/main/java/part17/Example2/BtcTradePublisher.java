@@ -84,6 +84,7 @@ public class BtcTradePublisher implements Publisher<Double> {
         ws.join();
     }
 
+    // 가격 골라내는 메소드
     private Double extractTradePrice(String json) {
         try {
             // Binance trade payload 예: {"e":"trade", ... , "p":"67982.34", ...}
@@ -97,7 +98,7 @@ public class BtcTradePublisher implements Publisher<Double> {
         }
     }
 
-
+    // 연결이 끊겼을 때를 대비
     public void stop() {
         WebSocket ws = this.webSocket;
         if (ws != null) {
@@ -108,17 +109,16 @@ public class BtcTradePublisher implements Publisher<Double> {
         publisher.close();
     }
 
-
+    // 중간 구독자
+    // 웹소켓 -> 중간 구독자 -> PriceChangeProcessor로 간다.
+    // 이래야 cancel을 받아올 수 있다.
     @Override
     public void subscribe(Subscriber<? super Double> subscriber) {
-
         publisher.subscribe(new Subscriber<Double>() {
 
             @Override
             public void onSubscribe(Subscription downstreamSub) {
-
                 Subscription wrapped = new Subscription() {
-
                     @Override
                     public void request(long n) {
                         downstreamSub.request(n);
@@ -135,7 +135,6 @@ public class BtcTradePublisher implements Publisher<Double> {
                         stop();
                     }
                 };
-
                 subscriber.onSubscribe(wrapped);
             }
 

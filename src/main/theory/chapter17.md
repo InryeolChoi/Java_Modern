@@ -164,7 +164,7 @@ Subscriber가 request(n)
 4️⃣[PriceEvent](../../main/java/part17/Example2/PriceEvent.java)  
 5️⃣[ChangeSubscriber](../../main/java/part17/Example2/ChangeSubscriber.java)
 
-전체 구조는 다음과 같다.  
+**전체 구조는 다음과 같다.**  
 ```text
 Main.WebSocket (Binance 서버)
 ↓
@@ -197,7 +197,10 @@ public class PriceChangeProcessor extends SubmissionPublisher<PriceEvent>
 }
 ```
 
-* PriceChangeProcessor의 onError() : closeExceptionally()를 집어넣음
+### Flow로 실제 어플리케이션 만들어보기 (3)
+> 아까의 App을 좀 더 완벽하게 만들어보자. 
+
+1. PriceChangeProcessor의 onError() : closeExceptionally()를 집어넣음**  
 ```text
 public class PriceChangeProcessor extends SubmissionPublisher<PriceEvent>
         implements Processor<Double, PriceEvent> {
@@ -209,24 +212,62 @@ public class PriceChangeProcessor extends SubmissionPublisher<PriceEvent>
     ...
 }
 ```
+
+**참조!!**
 * closeExceptionally() : 위 → 아래로 내가 망했으니 다 망했다는 신호
 * cancel() : 아래 → 위로 더 이상 안 하겠다는 신호.
 
-* cancel()도 넣어보자. 만약 변동률이 90% 이상 데이터로 간주
-* changeSubscriber.onNext()에 추가
-* 
+2. cancel() 넣어보기
+> 만약 변동률이 90% 이상이면, 아래부터 위로 구독 취소신호를 보냄
 
+* changeSubscriber.onNext() : 
+  * changeSubscriber가 이상치 감지 후 subscription.cancel() 호출
+* PriceChangeProcessor 변형 :
+  * 임시 Subscriber를 하나 만든다. 즉, PriceChangeProcessor를 Publisher와 Subscriber로 나눈다고 보면 된다.
+  * 그 안의 wrapped(subscription 타입)이 cancel을 가로챔 (cancel이 subscriber -> publisher로 바로 못 가게)
+  * wrapped Subscription.cancel() 실행 : 
+    * PriceChangeProcessor 내의 Publisher와 Subscriber 관계 해제
+    * PriceChangeProcessor 내의 Publisher의 메소드인 cancelUpstream() 호출
+* BtcTradePublisher 수정 :
+  * 임시 Subscriber를 하나 만든다. 즉, BtcTradePublisher도 Publisher와 Subscriber로 나눈다고 보면 된다.
+  * 그 안에 downstream을 취소하고, 웹소켓을 닫는다.
 
-
+> cancel()을 넣으려면 이런 복잡한 구조가 필요하다.
+```text
+웹소켓
+↓
+BtcTradePublisher
+↓
+BtcTradePublisher.subscribe (내부에 있는 중간 구독자)
+↓
+PriceChangeProcessor
+↓
+PriceChangeProcessor.subscribe (내부에 있는 중간 구독자)
+↓
+changeSubscriber
+```
+* 왜? 기본적으로 리액티브 모델 상 데이터의 흐름은 일방적이다.
+  * 외부 -> 발행자 -> 구독자.
+  * 데이터의 흐름 = 폭포라고 생각하자.
+* 따라서 거꾸로 올라가는 신호, 즉 cancel()은 댐의 어로 같은 게 필요하다
+* 중간 구독자가 마치 어로같은 역할을 수행한다.
 
 ### 자바는 왜 Flow Api 구현이 없는가?
 * 왜 Flow는 인터페이스만 있을까?
--> 이미 Flow 등장 전부터 다양한 리액티브 스트림용 라이브러리가 존재했기 때ㅜㅁㄴ
+-> 이미 Flow 등장 전부터 다양한 리액티브 스트림용 라이브러리가 존재했기 때문
 -> Flow는 일종의 표준공식
 
-* 아까의 두 예시에서 볼 수 있듯, 웹소켓의 
-* 
-
+* 위 예시들에서 볼 수 있듯, Flow만 가지고는 시스템을 만들 수 없음.
+* 또한 구현에 있어서 좀 복잡한 면이 있다.
+* 따라서 좀 더 편한 라이브러리를 찾다보니 나온 것들이 있다.
+* ex. RxJava, Spring WebFlux 
 
 ## 리액티브 스트림 코딩하기 (2) : Rxjava 사용하기
 * Rxjava : 가장 많이 사용하는 라이브러리 중 하나
+* 이것도 직접 앱을 만들어보면서 배워보자.
+
+### Rxjava로 앱 만들기
+> 동영상을 스트리밍하는 앱을 만들어보자.  
+  
+
+
