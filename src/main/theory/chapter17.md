@@ -182,8 +182,21 @@ ChangeSubscriber (Subscriber<PriceEvent>)
 
 * 여기서는 Subscription이 직접 구현되지는 않음.
 * 다만 PriceChangeProcessor 안에 SubmissionPublisher가 상속되어 있음.
-* 따라서 subscribe() 호출되면, Subscriber마다 Subscription 객체 생성해 
-* subscriber.onSubscribe(subscription)하는 과정을 알아서 해준다.
+* 따라서 Onsubscribe() 호출되면, Subscription이 알아서 등록된다.
+* 즉 Subscription의 역할이 PriceChangeProcessor 안에 녹아있다.
+```text
+public class PriceChangeProcessor extends SubmissionPublisher<PriceEvent>
+        implements Processor<Double, PriceEvent> {
+...
+    @Override
+    public void onSubscribe(Subscription subscription) {
+        this.subscription = subscription;
+        subscription.request(1);
+    }
+...
+}
+```
+
 
 ### 자바는 왜 Flow Api 구현이 없는가?
 * 왜 Flow는 인터페이스만 있을까?
