@@ -16,11 +16,16 @@ public class ChangeSubscriber implements Subscriber<PriceEvent> {
     @Override
     public void onNext(PriceEvent event) {
         // processor에게 받은 데이터를 출력
-        System.out.printf(
-                "💰 현재가: %.2f | 📈 변동률: %.4f%%%n",
+        System.out.printf("💰 현재가: %.2f | 변동률: %.4f%%%n",
                 event.getPrice(),
-                event.getChangePct()
-        );
+                event.getChangePct());
+
+        // 🔥 이상 데이터 조건이 생기면 -> cancel()을 가동한다.
+        if (Math.abs(event.getChangePct()) > 90.0) {
+            System.out.println("⚠ 이상 변동 감지 → cancel()");
+            subscription.cancel();   // ⬅ 여기서 중단
+            return;
+        }
         subscription.request(1);
     }
 

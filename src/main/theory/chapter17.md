@@ -212,11 +212,21 @@ public class PriceChangeProcessor extends SubmissionPublisher<PriceEvent>
 * closeExceptionally() : 위 → 아래로 내가 망했으니 다 망했다는 신호
 * cancel() : 아래 → 위로 더 이상 안 하겠다는 신호.
 
+* cancel()도 넣어보자. 만약 변동률이 90% 이상 데이터로 간주
+* changeSubscriber.onNext()에 추가
+* 
+
+
+
 
 ### 자바는 왜 Flow Api 구현이 없는가?
 * 왜 Flow는 인터페이스만 있을까?
 -> 이미 Flow 등장 전부터 다양한 리액티브 스트림용 라이브러리가 존재했기 때ㅜㅁㄴ
 -> Flow는 일종의 표준공식
 
+* 아까의 두 예시에서 볼 수 있듯, 웹소켓의 
+* 
+
+
 ## 리액티브 스트림 코딩하기 (2) : Rxjava 사용하기
-* Rxjava : 가장 많이 사용하는 
+* Rxjava : 가장 많이 사용하는 라이브러리 중 하나

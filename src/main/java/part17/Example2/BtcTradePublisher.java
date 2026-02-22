@@ -111,6 +111,48 @@ public class BtcTradePublisher implements Publisher<Double> {
 
     @Override
     public void subscribe(Subscriber<? super Double> subscriber) {
-        publisher.subscribe(subscriber);
+
+        publisher.subscribe(new Subscriber<Double>() {
+
+            @Override
+            public void onSubscribe(Subscription downstreamSub) {
+
+                Subscription wrapped = new Subscription() {
+
+                    @Override
+                    public void request(long n) {
+                        downstreamSub.request(n);
+                    }
+
+                    @Override
+                    public void cancel() {
+                        System.out.println("🛑 downstream cancel 감지 → WebSocket 종료");
+
+                        // 1️⃣ downstream 취소
+                        downstreamSub.cancel();
+
+                        // 2️⃣ WebSocket 종료
+                        stop();
+                    }
+                };
+
+                subscriber.onSubscribe(wrapped);
+            }
+
+            @Override
+            public void onNext(Double item) {
+                subscriber.onNext(item);
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                subscriber.onError(throwable);
+            }
+
+            @Override
+            public void onComplete() {
+                subscriber.onComplete();
+            }
+        });
     }
 }
