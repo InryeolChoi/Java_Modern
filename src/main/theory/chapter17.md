@@ -45,8 +45,7 @@
 1. Java 9부터 지원하는 Flow 클래스 쓰기
 2. 라이브러리 형태로 지원하는 RxJava 쓰기
 
-
-## 리액티브 스트림과 Flow api
+## 리액티브 스트림 코딩하기 (1) : Flow api
 * 스트림 : 시간에 따라 발생하는 이벤트의 흐름
 * 스트림을 다루려면 다음 4가지가 꼭 필요함.
 1. 비동기
@@ -54,7 +53,7 @@
 3. Backpressure 지원
 4. 데이터 흐름 중심
 
-## Flow 클래스 소개
+### Flow 클래스 소개
 >> Reactive Streams 표준을 JDK 안으로 가져옴
 
 📦 Flow는 클래스가 아니라 “인터페이스 묶음”
@@ -108,15 +107,88 @@ public interface Processor<T,R>
 4️⃣ Publisher가 onNext() n번 호출
 5️⃣ 완료되면 onComplete()  
 
-## 실제 어플리케이션 만들어보기
-1️⃣[TempInfo](../../main/java/part17/TempInfo.java)
-2️⃣[TempSubscription](../../main/java/part17/TempSubscription.java)
-3️⃣[TempSubscriber](../../main/java/part17/TempSubscriber.java)
-4️⃣[Main](../../main/java/part17/Main.java)
+### Flow로 실제 어플리케이션 만들어보기
+1️⃣[TempInfo](../../main/java/part17/Example1/TempInfo.java)  
+2️⃣[TempSubscription](../../main/java/part17/Example1/TempSubscription.java)  
+3️⃣[TempSubscriber](../../main/java/part17/Example1/TempSubscriber.java)  
+4️⃣[Main](../../main/java/part17/Example1/Main.java)  
 
-1. Main에서 TempSubscriber를 구독자로 추가
-2. TempSubscriber.onSubscribe가 구독을 추가하고 첫 번째 요청을 보냄
-3. Main의 getTemp 작동해 응답 날림 -> TempSubscriber의 onNext 작동
-4. TempSubscriber의 onNext는 -> Subscription에 메시지를 날림
-5. Subscription은 TempInfo에서 가져온 정보를 TempSubscriber.onComplete()로 날림.
-6. 이 과정이 반복.
+1. Main에서 TempSubscriber를 구독자로 추가  
+2. TempSubscriber.onSubscribe가 구독을 추가하고 첫 번째 요청을 보냄  
+3. Main의 getTemp 작동해 응답 날림 -> TempSubscriber의 onNext 작동  
+4. TempSubscriber의 onNext는 -> Subscription에 메시지를 날림  
+5. Subscription은 TempInfo에서 가져온 정보를 TempSubscriber.onComplete()로 날림.  
+6. 이 과정이 반복.  
+
+다만, 아래 코드 중 if문에 걸린 내용 때문에 가끔씩 에러가 터진다.  
+-> 약 1/10 확률로 에러가 터질수 밖에 없다.  
+```text
+    public static TempInfo fetch(String town) {
+        if (random.nextInt(10) == 0)
+            throw new RuntimeException("Error!");
+        return new TempInfo(town, random.nextInt(100));
+    }
+```
+
+그렇다고 if문을 지우면 에러가 난다. 왜? 다음과 같은 재귀 반복 현상이 생기기 때문.  
+```text
+subscription.request(1)
+ └─ subscriber.onNext
+     └─ subscription.request(1)
+         └─ subscriber.onNext
+             └─ subscription.request(1)
+                 └─ subscriber.onNext
+```
+
+실제 무한한 스트림은 구독자가 무한히 request()를 보내지 않는다.  
+발행자로부터 무한한 데이터가 오고, 구독자는 이를 끊어서 받는다.  
+```text
+(이벤트 발생)
+     ↓
+Publisher 내부 큐에 적재
+     ↓
+Subscriber가 request(n)
+     ↓
+가능한 만큼 drain
+```
+
+### Flow로 실제 어플리케이션 만들어보기 (2)
+* 이번에는 실제 스트림 데이터를 활용해서 무한히 도는 어플리케이션을 만들어보자.
+* 조건 : Processor가 들어가야 한다. 
+
+> binance API를 사용, 실시간 비트코인 변동폭을 보여주는 App을 설계
+
+1️⃣[Main](../../main/java/part17/Example2/Main.java)
+2️⃣[BtcTradePublisher](../../main/java/part17/Example2/BtcTradePublisher.java)  
+3️⃣[PriceChangeProcessor](../../main/java/part17/Example2/PriceChangeProcessor.java)  
+4️⃣[PriceEvent](../../main/java/part17/Example2/PriceEvent.java)  
+5️⃣[ChangeSubscriber](../../main/java/part17/Example2/ChangeSubscriber.java)
+
+전체 구조는 다음과 같다.  
+```text
+Main.WebSocket (Binance 서버)
+↓
+BtcTradePublisher (Publisher<Double>)
+- 외부 세계와 연결
+- onOpen -> OnText (extractTradePrice 사용)
+↓
+PriceChangeProcessor (Processor<Double, PriceEvent>)
+- 계산 파이프라인
+- 중간에 PriceEvent를 이용해 변동률과 현재가를 묶는다.
+↓
+ChangeSubscriber (Subscriber<PriceEvent>)
+- 출력
+```
+
+* 여기서는 Subscription이 직접 구현되지는 않음.
+* 다만 PriceChangeProcessor 안에 SubmissionPublisher가 상속되어 있음.
+* 따라서 subscribe() 호출되면, Subscriber마다 Subscription 객체 생성해 
+* subscriber.onSubscribe(subscription)하는 과정을 알아서 해준다.
+
+### 자바는 왜 Flow Api 구현이 없는가?
+* 왜 Flow는 인터페이스만 있을까?
+-> 이미 Flow 등장 전부터 다양한 리액티브 스트림용 라이브러리가 존재했기 때ㅜㅁㄴ
+-> Flow는 일종의 표준공식
+
+## 리액티브 스트림 코딩하기 (2) : Rxjava 사용하기
+* Rxjava : 가장 많이 사용하는 

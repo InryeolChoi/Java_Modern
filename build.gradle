@@ -27,10 +27,15 @@ dependencies {
     implementation 'org.apache.httpcomponents.client5:httpclient5-fluent:5.3'
 
     implementation 'org.slf4j:slf4j-simple:2.0.9'
+
+    // 17장에서 json 파싱용
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.1'
 }
 
 application {
-    mainClass = 'part1.practice'
+    mainClass = project.hasProperty("mainClass")
+            ? project.property("mainClass")
+            : "part17.Example2.Main"   // 기본값
 }
 
 jmh {
