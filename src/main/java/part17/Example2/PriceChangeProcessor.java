@@ -32,6 +32,13 @@ public class PriceChangeProcessor extends SubmissionPublisher<PriceEvent>
         subscription.request(1);
     }
 
+    // 추가
+    public void cancelUpstream() {
+        if (subscription != null) {
+            subscription.cancel();
+        }
+    }
+
     @Override
     public void onError(Throwable throwable) {
         closeExceptionally(throwable);
@@ -41,4 +48,5 @@ public class PriceChangeProcessor extends SubmissionPublisher<PriceEvent>
     public void onComplete() {
         close();
     }
+
 }

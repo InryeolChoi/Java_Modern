@@ -187,15 +187,30 @@ ChangeSubscriber (Subscriber<PriceEvent>)
 ```text
 public class PriceChangeProcessor extends SubmissionPublisher<PriceEvent>
         implements Processor<Double, PriceEvent> {
-...
+    ...
     @Override
     public void onSubscribe(Subscription subscription) {
         this.subscription = subscription;
         subscription.request(1);
     }
-...
+    ...
 }
 ```
+
+* PriceChangeProcessor의 onError() : closeExceptionally()를 집어넣음
+```text
+public class PriceChangeProcessor extends SubmissionPublisher<PriceEvent>
+        implements Processor<Double, PriceEvent> {
+    ...
+    @Override
+    public void onError(Throwable throwable) {
+        closeExceptionally(throwable);
+    }
+    ...
+}
+```
+* closeExceptionally() : 위 → 아래로 내가 망했으니 다 망했다는 신호
+* cancel() : 아래 → 위로 더 이상 안 하겠다는 신호.
 
 
 ### 자바는 왜 Flow Api 구현이 없는가?
