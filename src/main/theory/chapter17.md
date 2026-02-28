@@ -267,7 +267,39 @@ changeSubscriber
 * 이것도 직접 앱을 만들어보면서 배워보자.
 
 ### Rxjava로 앱 만들기
-> 책의 예제와 같이, 온도를 만드는 역할
+> 실시간으로 온도를 전송하는 느낌
 
-* Obser
-* 
+* TempObservable
+  * getTemperature() : 기본 온도 스트림 생성 
+  * getCelsiusTemperature() : 변환(map).
+  * getCelsiusTemperatures() : 여러 스트림 병합(merge)
+* TempObserver : 구독자 역할
+  * onSubscribe : 구독이 시작될 때 호출
+  * onNext : Observable이 값을 하나 발행할 때마다 호출됨.
+  * onError : 스트림에서 예외 발생 시 호출.
+  * onComplete : 스트림이 정상적으로 끝났을 때 호출.
+
+* Flow와 비교해보면
+  * Publisher, Processor, Subscriber, Executor, Cancel 전부 구현을
+  * 내부 메소드를 이용해 좀 더 줄였다.
+
+## 총평
+* 리액티브는 복잡하다. 
+* 그리고 실제로 쓰는 곳이 많이 없다!
+  * 왜? <모던 자바 인 액션> 이 나올 때 없던 대안이 생김.
+  * Virtual Thread (Project Loom)의 등장. 
+* 가상쓰레드는 코드가 더 쉽고, 이해하기 더 좋으며, 쓰레드 수를 늘려도 괜찮다!
+  * OS Thread의 비용을 낮추니 그냥 쓰레드를 늘려도 됨!
+  * 리액티브의 등장 배경; 쓰레드 수를 늘리지 말고, 이벤트 기반으로 돌리자! 가 무너짐
+* 그래도 리액티브는 초고도 트래픽이 있는 대규모 시스템에 필요는 하다.
+* 물론 대부분의 시스템은 그렇지 않기에 점차 Virtual Thread의 도입이 많아지고 있다.
+
+* 그럼에도 배운게 있다면...
+1. Backpressure 개념 : “소비자가 감당 못하면 어떻게 하지?”
+2. cancel 전파 구조
+   * CompletableFuture 조합 이해 
+   * 스트림 파이프라인 이해 
+   * Reactor 이해 
+   * SSE / 웹소켓 이해
+3. 데이터 흐름 중심 사고
+   * 데이터 흐름 → 이벤트 전파 → 반응
