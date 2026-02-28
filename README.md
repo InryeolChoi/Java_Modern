@@ -29,3 +29,7 @@ JDK 8 이후의 자바 공부 + 다양 기능 활용
 * [chapter15](./src/main/theory/chapter15.md) : CompletableFuture & 리액티브 프로그래밍 컨셉트 잡기
 * [chapter16](./src/main/theory/chapter16.md) : CompletableFuture : 조합 가능한 비동기 프로그래밍
 * [chapter17](./src/main/theory/chapter17.md) : 리액티브 프로그래밍
+
+## Part6 : 함수형 관점으로 생각하기
+* [chapter18](./src/main/theory/chapter18.md) : 함수형 관점으로 생각하기
+* [chapter19](./src/main/theory/chapter19.md) : 함수형 프로그래밍 기법
