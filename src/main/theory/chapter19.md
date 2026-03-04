@@ -162,7 +162,27 @@ version3
 
 같은 것들이 가능하다.
 
-### 코드 예제
+### 코드 예제 1
 * [코드 1](../../main/java/part19/example1/TrainJourney.java)
 * [코드 2](../../main/java/part19/example1/PersistentTrainJourney.java)
-* 링크리스트를 영속 자료구조로 만들기 vs 링크리스트를 영속 자료구조로 만들기
+* 링크리스트를 영속 자료구조로 만들기 vs 링크리스트를 파괴적 자료구조로 만들기
+* 영속 자료구조로 만들기에 쓴 함수가 `append()`
+  * append로 appended, appended2를 만들었을 때 결과는 항상 같음.
+  * 그러나 appended, appended2는 다른 자료구조. (메모리 주소가 다름)
+* 파괴적 자료구조로 만들기에 쓴 함수가 `link()`
+  * link를 두 번 실행하면 문제가 생긴다; 순환구조 발생
+
+### 코드 예제 2
+* [코드](../../main/java/part19/example2/PersistentTree.java)
+* 해당 트리는 이진 탐색 트리 (BST).
+* main에서 생성된 트리는 이렇게 생겼다
+```text
+        Mary:22
+       /      \
+ Emily:20    Tian:29
+   /    \       /
+Alan:50 Georgie:23 Raoul:23
+```
+
+* 영속 자료구조로 업데이트하면 : 기존 트리 t는 그대로 유지된다
+* 파괴적 자료구조로 업데이트하면 : 기존 트리 t를 수정.

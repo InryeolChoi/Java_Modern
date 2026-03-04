@@ -34,6 +34,7 @@ public class PersistentTrainJourney {
         TrainJourney tj2 = new TrainJourney(20, new TrainJourney(50, null));
 
         System.out.println("======================");
+        System.out.println("append() 실행");
 
         /* append 실행 : 새 리스트를 만듬 */
         TrainJourney appended = append(tj1, tj2);
@@ -66,6 +67,8 @@ public class PersistentTrainJourney {
         System.out.println("======================");
 
         /* link 실행 : link는 기존 리스트를 수정한다. */
+        System.out.println("link() 실행");
+
         TrainJourney linked = link(tj1, tj2);
         visit(linked, tj -> {
             System.out.print(tj.price + " - ");
