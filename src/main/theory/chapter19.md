@@ -186,3 +186,41 @@ Alan:50 Georgie:23 Raoul:23
 
 * 영속 자료구조로 업데이트하면 : 기존 트리 t는 그대로 유지된다
 * 파괴적 자료구조로 업데이트하면 : 기존 트리 t를 수정.
+
+## 스트림과 게으른 평가
+* 소수 생성기를 스트림을 이용해 만들어보자.
+* [코드1](../../main/java/part19/example3/CalculatePrime.java)
+* [코드2](../../main/java/part19/example3/MyMathUtil.java)
+
+* 이 알고리즘은 별로다. 왜?
+  * 너무 많은 수를 검사함
+  * isPrime 자체도 비쌈. $O(n^2)$ 수준
+  * 이전 소수 정보를 활용하지 않음.
+
+* Stream API를 이용해 좀 더 개선된 코드를 구현해보자
+* 에라스토테네스의 체를 구현한다고 보면 된다.
+* [개선된 코드](../../main/java/part19/example3/CalculatePrime2.java)
+
+* 그런데, 에러가 뜬다.
+* 왜? Java Stream의 구조 때문
+* Java Stream은 한번만 소비 가능한데, 여기서는 여러 번 소비하는 구조로 되어 있다.
+```text
+public static void main(String[] args) {
+    IntStream numbers = numbers();
+    int head = head(numbers);
+    IntStream filtered = tail(numbers).filter(n -> n % head != 0);
+    primes(filtered).forEach(System.out::println);
+    
+    // head(), tail() 같은 것이 스트림에 없기에 이렇게 나눠서 써야 함.
+}
+```
+따라서 새로운 대안이 필요하다.
+
+### LazyList
+* 스트림은 최종 연산이라는 개념이 있다.
+* 연산이 마지막에 실행되는 구조. 한번에 여러 연산이 처리
+```text
+
+```
+
+* 마찬가지로 연산이 마지막에 실행되는 구조의 List를
