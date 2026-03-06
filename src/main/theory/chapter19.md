@@ -12,8 +12,8 @@
 ```
 
 ### 자바는 어떻게 일급함수를 지원하는가?
+### 1. 고차원 함수 (Higher-Order Function)  
 
-1. 고차원 함수 (Higher-Order Function)
 📌 정의 : 함수를 인자로 받거나, 함수를 반환하는 함수  
 이 두 가지 중 하나라도 만족하면 고차원 함수임.  
 
@@ -36,7 +36,7 @@ public static int applyTwice(Function<Integer, Integer> f, int x) {
 * 동작을 파라미터화할 수 있음 
 * 조건/전략을 함수로 전달 가능
 
-2. 커링 
+### 2. 커링 (currying) 
 > 다중 인자 함수를 인자 하나짜리 함수들의 체인으로 바꾸는 것
 
 ex. “가격에 세율을 적용해서 최종 가격을 계산한다”
@@ -73,7 +73,7 @@ double r1 = tax10Calculator.apply(100.0); // 110
 double r2 = tax10Calculator.apply(200.0); // 220
 ```
 
-💡 정리 : 커링을 왜 쓰냐?
+### 💡 정리 : 커링을 왜 쓰냐?
 * 일부 인자를 고정한 함수를 만들 수 있음 
 * 함수 조합이 쉬워짐 
 * 설정된 함수(설정값 고정) 만들기 좋음
@@ -188,15 +188,22 @@ Alan:50 Georgie:23 Raoul:23
 * 파괴적 자료구조로 업데이트하면 : 기존 트리 t를 수정.
 
 ## 스트림과 게으른 평가
-* 소수 생성기를 스트림을 이용해 만들어보자.
-* [코드1](../../main/java/part19/example3/CalculatePrime.java)
-* [코드2](../../main/java/part19/example3/MyMathUtil.java)
+> 우리가 자주 쓰던 Stream API도 함수형 언어의
+> 무언가를 따온 기능이다.
+
+### 예시 : 소수 생성기
+>소수 생성기를 스트림을 이용해 만들어보자.
+
+### ver.1
+* [첫 번째 코드는 여기를 클릭](../../main/java/part19/example3/CalculatePrime.java)
+* [두 번째 코드는 여기를 클릭](../../main/java/part19/example3/MyMathUtil.java)
 
 * 이 알고리즘은 별로다. 왜?
   * 너무 많은 수를 검사함
   * isPrime 자체도 비쌈. $O(n^2)$ 수준
   * 이전 소수 정보를 활용하지 않음.
 
+### ver.2
 * Stream API를 이용해 좀 더 개선된 코드를 구현해보자
 * 에라스토테네스의 체를 구현한다고 보면 된다.
 * [개선된 코드](../../main/java/part19/example3/CalculatePrime2.java)
@@ -215,6 +222,7 @@ public static void main(String[] args) {
 }
 ```
 
+### ver.3
 * 따라서 새로운 대안이 필요하다.
 * 우선 [인터페이스 MyList](../../main/java/part19/example4/MyList.java)를 만드고
 * 이걸 활용한 [Empty](../../main/java/part19/example4/Empty.java), 
@@ -222,4 +230,128 @@ public static void main(String[] args) {
 * [LazyList](../../main/java/part19/example4/LazyList.java) 클래스를 만들어보자
 * main()에 해당하는 [CalculatePrime3](../../main/java/part19/example4/CalculatePrime3.java) 도 만들자.
 
-* 
+
+* CalculatePrime3을 보면, MyLinkedList를 활용하는 부분과 LazyList를 활용하는 부분이 있음
+* **MyLinkedList와 LazyList의 차이는?**
+* MyLinkedList : 리스트 전체가 이미 만들어져 있음
+* LazyList : tail이 리스트가 아니라 "함수"다.
+* 필요할 때 `tail.get()`으로 생성하며, filter 역시 필요할 때 생성.
+
+```text
+public class LazyList<T> implements MyList<T> {
+    final T head;
+    final Supplier<MyList<T>> tail;
+    
+    ....
+
+    @Override
+    public MyList<T> tail() {
+        return tail.get();
+    }
+
+    @Override
+    public MyList<T> filter(Predicate<T> p) {
+        return isEmpty() ? this :
+                p.test(head()) ?
+                        new LazyList<>(head(), () -> tail().filter(p)) :
+                        tail().filter(p);
+    }
+}
+```
+
+* 왜? Supplier를 사용하니까.
+* Supplier = 값을 “나중에” 만들어주는 함수로 자바의 interface 구현체
+
+* 정리해보자면,
+1. CalculatePrime2 :
+   * Stream을 이용해 에라토스테네스의 체를 구현하려고 한 코드 
+   * 하지만 재귀가 즉시 실행되기 때문에 실패함
+   * Stream은 중간 연산은 lazy지만, 재귀 구조 자체를 lazy하게 만들 수는 없다.
+2. CalculatePrime3 + MyLinkedList :
+   * Stream 대신 직접 만든 리스트 자료구조 
+   * 재귀 기반으로 구현
+   * 리스트 전체가 한 번에 계산되어 무한히 지속 불가
+3. CalculatePrime3 + LazyList :
+   * tail을 Supplier로 지연 계산하여 LazyList를 만들면 무한 리스트와 같은 함수형 자료구조를 구현할 수 있다.
+   * Supplier를 사용해 tail 계산을 지연시키면 LazyList가 되고, 
+   * 이를 통해 무한 리스트와 같은 함수형 자료구조를 구현할 수 있다.
+
+* 이러한 계산 시점의 늦춰짐(lazy evaluation)은 병렬 처리에 도움을 준다.
+  * 필요 없는 계산을 줄인다
+  * pipeline 방식으로 element 단위 처리 
+  * data parallelism 가능
+  * 공유 상태가 없다
+
+* 즉 자바의 스트림은 사실은 함수형 언어의 **게으른 자료구조** 아이디어를 가지고 온 것이다.
+* 하지만 자료구조 자체가 lazy한 것은 아니고, 연산(pipeline)만 lazy하다.
+
+## 패턴 매칭
+* 데이터의 구조에 따라 다른 로직을 실행하는 방식
+* 게으른 자료구조처럼 원래 함수형 언어에 있는 개념이라고 보면 된다.
+* ex. 하스켈에서의 예시
+```haskell
+eval (Number n) = n
+eval (Add e1 e2) = eval e1 + eval e2
+eval (Multiply e1 e2) = eval e1 * eval e2
+```
+
+* 자바에서 이걸하면...
+```text
+int eval(Expr e) {
+    if (e instanceof Number) {
+        return ((Number) e).value;
+    }
+
+    if (e instanceof Add) {
+        Add a = (Add) e;
+        return eval(a.left) + eval(a.right);
+    }
+
+    if (e instanceof Multiply) {
+        Multiply m = (Multiply) e;
+        return eval(m.left) * eval(m.right);
+    }
+
+    throw new IllegalArgumentException();
+}
+```
+
+* 문제점
+  * 타입을 외부에서 일일이 검사함. 
+  * 다형성을 제대로 활용하지 못함. Expr라는 인터페이스를 만들었는데도 일일히 어떤 타입인지 묻고 있음
+  * if문이 너무 많음.
+
+* 따라서 자바만을 위한 대안이 필요하다.
+* 책에서 먼저 언급하고 있는 것이 **방문자 디자인 패턴**이다.
+
+### 1. 방문자 디자인 패턴
+* 객체 구조는 그대로 유지하면서 새로운 연산(기능)을 쉽게 추가할 수 있도록 하는 디자인 패턴이다.
+* 즉, 객체 내부에 기능을 계속 추가하는 대신 외부 Visitor 객체에게 작업을 위임한다.
+* 핵심 아이디어: 객체 구조(데이터)와 객체에 적용되는 연산(기능)을 분리한다
+
+다음과 같은 객체 구조가 있다고 했을 때,
+```text
+Shape (interface)
+ ├─ Circle (class)
+ └─ Rectangle (class)
+```
+기능을 넣고 싶으면, Visitor 객체에게 이를 맡긴다.
+```text
+Shape (interface)
+ ├─ Circle (class)
+ └─ Rectangle (class)
+
+Visitor (interface)
+ ├─ AreaVisitor (class)
+ └─ ChangeVisitor (class)
+```
+
+> 이걸로도 패턴 매칭을 흉내낼 수 있지만,
+> 진짜 패턴매칭도 알아보자!
+ 
+### 2. 패턴매칭
+* 작성 코드는 [다음과 같다](../../main/java/part19/example5/PatternMatching.java)
+* 그런데 이것도 완벽한 패턴매칭은 아니다.
+* 왜? 계속 instanceof를 쓰고 함수가 커지는 구조이기 때문에...
+* 결국 Java는 전통적으로 패턴 매칭 언어가 아니기 때문에 생기는 일이다.
+* 즉, 자바라는 언어의 한계가 있다는 뜻이다.
