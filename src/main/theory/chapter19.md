@@ -214,8 +214,12 @@ public static void main(String[] args) {
     // head(), tail() 같은 것이 스트림에 없기에 이렇게 나눠서 써야 함.
 }
 ```
-따라서 새로운 대안이 필요하다.
 
-```text
+* 따라서 새로운 대안이 필요하다.
+* 우선 [인터페이스 MyList](../../main/java/part19/example4/MyList.java)를 만드고
+* 이걸 활용한 [Empty](../../main/java/part19/example4/Empty.java), 
+* [MyLinkedList](../../main/java/part19/example4/MyLinkedList.java) 클래스,
+* [LazyList](../../main/java/part19/example4/LazyList.java) 클래스를 만들어보자
+* main()에 해당하는 [CalculatePrime3](../../main/java/part19/example4/CalculatePrime3.java) 도 만들자.
 
-```
+* 

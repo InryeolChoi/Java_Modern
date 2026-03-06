@@ -3,6 +3,7 @@ package part19.example3;
 import java.util.stream.IntStream;
 
 public class CalculatePrime2 {
+    // 에러가 날 수 밖에 없다.
     public static void main(String[] args) {
         IntStream numbers = numbers();
         int head = head(numbers);

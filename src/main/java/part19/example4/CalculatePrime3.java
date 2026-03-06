@@ -6,7 +6,6 @@ public class CalculatePrime3 {
         System.out.println("------ LazyList 미사용 ------");
         MyList<Integer> list = new MyLinkedList<>(5,
                 new MyLinkedList<>(10, new Empty<>()));
-
         System.out.println(list.head());
 
         // LazyList 사용
@@ -17,15 +16,24 @@ public class CalculatePrime3 {
         int four = numbers.tail().tail().head();
         System.out.println(two + " " + three + " " + four);
 
+        // LazyList 응용 : 무한히 소수 생성
+        // stackoverflow 발생
+        // printAll(primes(from(2)));
     }
 
-    public static LazyList<Integer> from(int n) {
+    static LazyList<Integer> from(int n) {
         return new LazyList<Integer>(n, () -> from(n + 1));
     }
 
-    public static MyList<Integer> primes(MyList<Integer> numbers) {
+    static MyList<Integer> primes(MyList<Integer> numbers) {
         return new LazyList<>(numbers.head(),
-                () -> primes(numbers.tail().filter(n -> n % numbers.head() != 0)));
+            () -> primes(numbers.tail().filter(n -> n % numbers.head() != 0)));
     }
 
+    static <T> void printAll(MyList<T> list) {
+        if (list.isEmpty())
+            return;
+        System.out.println(list.head());
+        printAll(list.tail());
+    }
 }
