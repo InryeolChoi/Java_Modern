@@ -33,3 +33,4 @@ JDK 8 이후의 자바 공부 + 다양 기능 활용
 ## Part6 : 함수형 관점으로 생각하기
 * [chapter18](./src/main/theory/chapter18.md) : 함수형 관점으로 생각하기
 * [chapter19](./src/main/theory/chapter19.md) : 함수형 프로그래밍 기법
+* (20장은 제외함)
